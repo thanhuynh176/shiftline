@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Shiftline">
+<meta name="theme-color" content="#1a1614">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<title>Shiftline · My Shifts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+:root{
+  --paper:#f5f1ea;--paper-2:#ebe5d9;--paper-3:#ddd5c4;
+  --ink:#1a1614;--ink-2:#4a423b;--ink-3:#7a7068;
+  --rule:#1a1614;--rule-soft:#c4b9a3;
+  --accent:#dc4a2a;--accent-deep:#a93617;--accent-soft:#f4d4c8;
+  --confirm:#0d4f3c;--confirm-soft:#c8dcd2;
+  --warn:#b8860b;--warn-soft:#f0e3b8;
+  --nav-h:60px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--ink);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+#root{height:100%;display:flex;flex-direction:column}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font-family:inherit;font-size:inherit;color:inherit;border-radius:0;-webkit-appearance:none}
+
+/* ── LOADING ── */
+.loading-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--ink);gap:16px}
+.loading-mark{width:40px;height:40px;background:var(--accent);position:relative}
+.loading-mark::after{content:'';position:absolute;inset:8px 6px;background:var(--ink)}
+.loading-name{font-family:'Instrument Serif',serif;font-size:32px;color:var(--paper)}
+.loading-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:rgba(245,241,234,.4)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.loading-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 1.2s ease-in-out infinite}
+
+/* ── LOGIN ── */
+.login-screen{flex:1;display:flex;flex-direction:column;min-height:100dvh;background:var(--ink)}
+.login-top{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px 24px}
+.login-mark{width:44px;height:44px;background:var(--accent);position:relative;margin-bottom:16px}
+.login-mark::after{content:'';position:absolute;inset:9px 7px;background:var(--ink)}
+.login-title{font-family:'Instrument Serif',serif;font-size:44px;color:var(--paper);line-height:1;margin-bottom:4px}
+.login-subtitle{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:rgba(245,241,234,.4)}
+.login-bottom{padding:24px 28px;padding-bottom:calc(28px + var(--safe-b))}
+.login-label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(245,241,234,.5);margin-bottom:6px}
+.login-field{margin-bottom:14px}
+.login-input{width:100%;padding:16px;background:rgba(245,241,234,.07);border:1px solid rgba(245,241,234,.15);color:var(--paper);font-size:16px;outline:none;appearance:none}
+.login-input::placeholder{color:rgba(245,241,234,.25)}
+.login-input:focus{border-color:var(--accent)}
+.login-btn{width:100%;padding:16px;background:var(--accent);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;margin-top:8px;transition:background .12s}
+.login-btn:active{background:var(--accent-deep)}
+.login-btn:disabled{opacity:.5}
+.login-error{background:rgba(220,74,42,.15);border:1px solid rgba(220,74,42,.5);color:#ff9980;padding:10px 14px;font-size:12px;margin-top:12px;line-height:1.5}
+.login-hint{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:rgba(245,241,234,.2);text-align:center;margin-top:20px;line-height:2}
+
+/* ── APP SHELL ── */
+.app-shell{flex:1;display:flex;flex-direction:column;background:var(--paper);height:100dvh;overflow:hidden}
+.app-header{background:var(--ink);padding:12px 18px;padding-top:calc(12px + var(--safe-t));display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-mark{width:22px;height:22px;background:var(--accent);position:relative;flex-shrink:0}
+.header-mark::after{content:'';position:absolute;inset:5px 4px;background:var(--ink)}
+.header-brand{display:flex;flex-direction:column}
+.header-title{font-family:'Instrument Serif',serif;font-size:20px;color:var(--paper);line-height:1}
+.header-user{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,241,234,.4);margin-top:1px}
+.bell-btn{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(245,241,234,.08);position:relative;flex-shrink:0}
+.bell-icon{font-size:18px;line-height:1;display:block}
+.bell-badge{position:absolute;top:5px;right:5px;min-width:16px;height:16px;background:var(--accent);border-radius:8px;padding:0 4px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--ink)}
+
+/* ── NOTIFICATION BANNER ── */
+.notif-banner{position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--ink);border-bottom:3px solid var(--accent);padding:16px 20px;padding-top:calc(16px + var(--safe-t));transform:translateY(-120%);transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.notif-banner.visible{transform:translateY(0)}
+.nb-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:4px}
+.nb-title{font-family:'Instrument Serif',serif;font-size:22px;color:var(--paper);line-height:1.1;margin-bottom:3px}
+.nb-body{font-size:12px;color:rgba(245,241,234,.65);margin-bottom:12px;line-height:1.5}
+.nb-actions{display:flex;gap:8px}
+.nb-btn{padding:9px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;border:1px solid}
+.nb-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.nb-btn.secondary{background:transparent;color:rgba(245,241,234,.5);border-color:rgba(245,241,234,.2)}
+
+/* ── SCROLL AREA ── */
+.tab-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--paper);padding-bottom:calc(var(--nav-h) + var(--safe-b) + 8px)}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--ink);height:calc(var(--nav-h) + var(--safe-b));padding-bottom:var(--safe-b);display:flex;border-top:1px solid rgba(245,241,234,.1);z-index:100;flex-shrink:0}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding-top:6px;position:relative;color:rgba(245,241,234,.35);transition:color .15s;border:none;background:none;cursor:pointer}
+.nav-tab.active{color:var(--paper)}
+.nav-tab.active::before{content:'';position:absolute;top:0;left:25%;right:25%;height:2px;background:var(--accent)}
+.nav-tab-icon{font-size:20px;line-height:1;display:block;position:relative}
+.nav-tab-label{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.07em}
+.nav-dot{position:absolute;top:-3px;right:-5px;width:8px;height:8px;background:var(--accent);border-radius:50%;border:1.5px solid var(--ink)}
+
+/* ── HOME TAB ── */
+.home-hero{background:var(--ink);color:var(--paper);padding:20px 20px 24px;position:relative;overflow:hidden}
+.home-hero::after{content:'';position:absolute;right:-30px;bottom:-30px;width:120px;height:120px;background:var(--accent);transform:rotate(45deg);opacity:.07}
+.hero-greeting{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(245,241,234,.45);margin-bottom:4px}
+.hero-name{font-family:'Instrument Serif',serif;font-size:46px;line-height:.95;letter-spacing:-.01em}
+.hero-name em{font-style:italic;color:var(--accent)}
+.hero-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,241,234,.35);margin-top:8px}
+
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule-soft);border-bottom:1px solid var(--rule-soft)}
+.stat-cell{background:var(--paper);padding:14px 10px;text-align:center}
+.stat-n{font-family:'Instrument Serif',serif;font-size:36px;line-height:1}
+.stat-l{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);margin-top:1px}
+
+.home-section{padding:18px 16px 0}
+.section-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);margin-bottom:10px}
+
+/* Next shift hero card */
+.nsc{border:1px solid var(--rule);background:var(--paper);margin-bottom:1px}
+.nsc-header{background:var(--ink);color:var(--paper);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.nsc-date-col{}
+.nsc-day-name{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,241,234,.5)}
+.nsc-day-num{font-family:'Instrument Serif',serif;font-size:40px;line-height:1;letter-spacing:-.02em}
+.nsc-month{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,241,234,.5);margin-top:1px}
+.nsc-time-col{text-align:right}
+.nsc-time{font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:.04em}
+.nsc-arrow{color:var(--accent);margin:0 4px;font-size:14px}
+.nsc-hours{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(245,241,234,.4);margin-top:2px}
+.nsc-body{padding:14px 16px}
+.nsc-role{font-family:'Instrument Serif',serif;font-size:26px;line-height:1.1;margin-bottom:4px}
+.nsc-line{font-size:13px;color:var(--ink-2)}
+.nsc-prod{font-size:11px;color:var(--ink-3);font-style:italic;margin-top:2px}
+.nsc-today-pill{background:var(--confirm);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;display:inline-block;margin-top:8px}
+
+/* Week strip */
+.week-row{display:grid;grid-template-columns:72px 1fr auto;gap:12px;padding:12px 16px;border-bottom:1px solid var(--rule-soft);background:var(--paper);align-items:center}
+.week-row.rdo{background:var(--confirm-soft)}
+.week-row.off{background:var(--paper-2)}
+.wr-date{}
+.wr-dname{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3)}
+.wr-dnum{font-family:'Instrument Serif',serif;font-size:30px;line-height:1}
+.wr-dmonth{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em}
+.wr-role{font-size:14px;font-weight:500}
+.wr-sub{font-size:11px;color:var(--ink-3);margin-top:2px}
+.wr-time{font-family:'IBM Plex Mono',monospace;font-size:12px;white-space:nowrap;color:var(--ink-2);text-align:right}
+.wr-h{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3);text-align:right;margin-top:2px}
+.rdo-label{font-family:'Instrument Serif',serif;font-size:20px;color:var(--confirm)}
+.off-label{font-size:13px;color:var(--ink-3);font-style:italic}
+
+.no-roster{padding:32px 20px;text-align:center}
+.no-roster-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.no-roster-title{font-family:'Instrument Serif',serif;font-size:26px;margin-bottom:6px}
+.no-roster-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3)}
+
+/* ── SCHEDULE TAB ── */
+.sched-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--paper-2);border-bottom:1px solid var(--rule-soft);flex-shrink:0}
+.sched-nav-btn{padding:7px 14px;background:var(--paper);border:1px solid var(--rule-soft);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.07em;cursor:pointer}
+.sched-nav-btn:active{background:var(--ink);color:var(--paper)}
+.sched-week-label{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2);text-align:center;flex:1}
+
+.sched-pill{display:flex;gap:1px;padding:10px 14px;background:var(--paper-2);border-bottom:1px solid var(--rule-soft)}
+.sched-pill-btn{flex:1;padding:6px 4px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-align:center;background:var(--paper);border:1px solid var(--rule-soft);color:var(--ink-3)}
+.sched-pill-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+.sli{display:grid;grid-template-columns:68px 1fr auto;gap:10px;padding:14px 16px;border-bottom:1px solid var(--rule-soft);background:var(--paper);align-items:start}
+.sli.new-s{border-left:3px solid var(--confirm)}
+.sli.changed-s{border-left:3px solid var(--accent)}
+.sli-dname{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
+.sli-dnum{font-family:'Instrument Serif',serif;font-size:32px;line-height:1}
+.sli-dmonth{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--ink-3)}
+.sli-role{font-family:'Instrument Serif',serif;font-size:22px;line-height:1.1}
+.sli-line{font-size:12px;color:var(--ink-2);margin-top:3px}
+.sli-prod{font-size:11px;color:var(--ink-3);font-style:italic}
+.sli-time{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-2);white-space:nowrap;text-align:right}
+.sli-hrs{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3);text-align:right;margin-top:2px}
+
+.sched-rdo{display:grid;grid-template-columns:68px 1fr;gap:10px;padding:14px 16px;border-bottom:1px solid var(--confirm);background:var(--confirm-soft);align-items:center}
+.sched-off{display:grid;grid-template-columns:68px 1fr;gap:10px;padding:12px 16px;border-bottom:1px solid var(--rule-soft);background:var(--paper-2);align-items:center;opacity:.65}
+.sched-empty{padding:40px 20px;text-align:center;color:var(--ink-3);font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+
+/* ── NOTIFICATIONS TAB ── */
+.notif-header-bar{padding:12px 16px 10px;background:var(--paper-2);border-bottom:1px solid var(--rule-soft);display:flex;align-items:center;justify-content:space-between}
+.notif-count-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3)}
+.notif-acts{display:flex;gap:6px}
+.notif-act{padding:6px 12px;border:1px solid var(--rule-soft);background:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.07em;cursor:pointer}
+.notif-act:active{background:var(--ink);color:var(--paper)}
+
+.ni{display:flex;gap:12px;padding:15px 16px;border-bottom:1px solid var(--rule-soft);background:var(--paper);align-items:flex-start}
+.ni.unread{background:#fff}
+.ni-dot{width:8px;height:8px;flex-shrink:0;margin-top:6px;border-radius:50%}
+.ni-dot.unread{background:var(--accent)}
+.ni-dot.read{background:var(--paper-3)}
+.ni-body{flex:1;min-width:0}
+.ni-title{font-size:14px;font-weight:500;line-height:1.3}
+.ni-summary{font-size:12px;color:var(--ink-3);margin-top:3px;line-height:1.5}
+.ni-time{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-top:4px}
+.ni-tag{display:inline-block;padding:1px 6px;font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.06em;border:1px solid;margin-top:4px}
+.ni-tag.roster{color:var(--confirm);border-color:var(--confirm)}
+.ni-tag.rdo{color:var(--warn);border-color:var(--warn)}
+
+.perm-card{margin:16px;padding:16px;border:1px solid var(--warn);background:var(--warn-soft)}
+.perm-title{font-weight:600;font-size:14px;margin-bottom:6px}
+.perm-body{font-size:12px;color:var(--ink-2);margin-bottom:12px;line-height:1.6}
+.perm-btn{padding:10px 20px;background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer}
+
+.demo-card{margin:16px;padding:14px 16px;border:1px dashed var(--rule-soft);background:var(--paper-2)}
+.demo-label{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);margin-bottom:8px}
+.demo-btn{padding:9px 16px;background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;width:100%}
+.demo-btn:active{background:var(--accent)}
+
+.notif-empty{padding:48px 20px;text-align:center;color:var(--ink-3);font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+
+/* ── PROFILE TAB ── */
+.profile-hero{background:var(--ink);color:var(--paper);padding:32px 20px 28px;text-align:center}
+.profile-avatar{width:70px;height:70px;background:var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:30px;color:#fff;margin-bottom:14px}
+.profile-name{font-family:'Instrument Serif',serif;font-size:32px;line-height:1}
+.profile-id{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(245,241,234,.4);margin-top:6px;letter-spacing:.1em;text-transform:uppercase}
+.profile-line-tag{margin-top:10px;display:inline-block;padding:3px 10px;border:1px solid rgba(245,241,234,.2);font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,241,234,.5)}
+
+.profile-section{padding:10px 16px 4px;font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);background:var(--paper-2);border-bottom:1px solid var(--rule-soft)}
+.profile-row{padding:14px 16px;border-bottom:1px solid var(--rule-soft);background:var(--paper);display:flex;justify-content:space-between;align-items:center}
+.profile-row-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3)}
+.profile-row-value{font-size:13px;color:var(--ink-2)}
+.profile-row-value.mono{font-family:'IBM Plex Mono',monospace;font-size:12px}
+
+.perm-row{padding:14px 16px;border-bottom:1px solid var(--rule-soft);background:var(--paper);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.perm-status{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border:1px solid}
+.perm-status.granted{color:var(--confirm);border-color:var(--confirm)}
+.perm-status.denied{color:var(--accent);border-color:var(--accent)}
+.perm-status.default{color:var(--warn);border-color:var(--warn)}
+.perm-grant-btn{padding:8px 14px;background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;flex-shrink:0}
+
+.install-card{margin:16px;padding:14px 16px;border:1px solid var(--rule-soft);background:var(--paper-2);font-size:12px;color:var(--ink-2);line-height:1.7}
+.install-card strong{color:var(--ink);font-weight:600}
+
+.logout-btn{width:calc(100% - 32px);margin:20px 16px;padding:15px;background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;cursor:pointer}
+.logout-btn:active{background:var(--accent)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .2s ease forwards}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useCallback, createContext, useContext } = React;
+
+/* ══════════════════════════════════════════
+   SUPABASE CLIENT
+══════════════════════════════════════════ */
+const SUPABASE_URL  = 'https://zqatducmyobthysrzvol.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxYXRkdWNteW9idGh5c3J6dm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjQxMTIsImV4cCI6MjA5NDI0MDExMn0.WOnObAFFPch1owaq4bZ1TTOwGIpS8aiICm9NmDS7NNc';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* ══════════════════════════════════════════
+   STORE — Supabase-backed
+══════════════════════════════════════════ */
+const Store = {
+  _session: null,
+
+  async get(key) {
+    if (key === 'currentUser') return Store._session;
+    if (key === 'users') {
+      const { data } = await sb.from('users').select('*');
+      return (data || []).map(u => ({ ...u, primaryLine: u.primary_line, skills: u.skills || [] }));
+    }
+    if (key === 'lines') {
+      const { data } = await sb.from('lines').select('*');
+      return data || [];
+    }
+    if (key === 'products') {
+      const { data } = await sb.from('products').select('*');
+      return (data || []).map(p => ({ ...p, lineId: p.line_id }));
+    }
+    if (key === 'rdoRequests') {
+      const { data } = await sb.from('rdo_requests').select('*');
+      return (data || []).map(r => ({ ...r, workerId: r.worker_id }));
+    }
+    if (key.startsWith('roster:')) {
+      const weekStart = key.replace('roster:', '');
+      const { data: roster } = await sb.from('rosters')
+        .select('*').eq('week_start', weekStart).maybeSingle();
+      if (!roster) return null;
+      const { data: shifts } = await sb.from('shifts')
+        .select('*').eq('roster_id', roster.id);
+      return {
+        weekStart:   roster.week_start,
+        status:      roster.status,
+        publishedAt: roster.published_at ? new Date(roster.published_at).getTime() : null,
+        version:     roster.version,
+        changeLog:   roster.change_log || [],
+        shifts: (shifts || []).map(s => ({
+          id:        s.id,  day:       s.day,
+          lineId:    s.line_id,        productId: s.product_id,
+          role:      s.role,           workerId:  s.worker_id,
+          startTime: s.start_time,     endTime:   s.end_time,
+        })),
+      };
+    }
+    if (key.startsWith('notif:')) {
+      const workerId = key.replace('notif:', '');
+      const { data } = await sb.from('notifications')
+        .select('*').eq('worker_id', workerId)
+        .order('created_at', { ascending: false }).limit(30);
+      return (data || []).map(n => ({
+        id:        n.id,
+        ts:        new Date(n.created_at).getTime(),
+        title:     n.title,    summary: n.summary,
+        type:      n.type,     unread:  n.unread,
+        weekStart: n.week_start,
+      }));
+    }
+    return null;
+  },
+
+  async set(key, value) {
+    if (key === 'currentUser') { Store._session = value; return true; }
+    if (key.startsWith('notif:')) {
+      // Worker can mark notifications as read via update
+      const workerId = key.replace('notif:', '');
+      const unreadOff = (value || []).filter(n => !n.unread).map(n => n.id);
+      if (unreadOff.length) {
+        await sb.from('notifications')
+          .update({ unread: false })
+          .in('id', unreadOff)
+          .eq('worker_id', workerId);
+      }
+      return true;
+    }
+    return true;
+  },
+
+  async del(key) {
+    if (key === 'currentUser') { Store._session = null; return true; }
+    if (key.startsWith('notif:')) {
+      const workerId = key.replace('notif:', '');
+      await sb.from('notifications').delete().eq('worker_id', workerId);
+      return true;
+    }
+    return true;
+  },
+};
+
+/* ══════════════════════════════════════════
+   DATE HELPERS
+══════════════════════════════════════════ */
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_FULL  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function startOfWeek(d) {
+  const c = new Date(d), day = c.getDay();
+  c.setDate(c.getDate() + (day === 0 ? -6 : 1 - day));
+  c.setHours(0,0,0,0); return c;
+}
+function isoWeekKey(d)  { return startOfWeek(d).toISOString().slice(0,10); }
+function addDays(d, n)  { const c = new Date(d); c.setDate(c.getDate()+n); return c; }
+function fmtDate(d)     { return `${d.getDate()} ${MONTHS[d.getMonth()]}`; }
+function fmtFullDate(d) { return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; }
+function ymd(d)         { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function durationHours(s,e) {
+  const [sh,sm]=s.split(':').map(Number), [eh,em]=e.split(':').map(Number);
+  let m=(eh*60+em)-(sh*60+sm); if(m<0) m+=24*60; return (m/60).toFixed(1);
+}
+function uuid() { return 'id_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4); }
+function relativeTime(ts) {
+  const diff=Date.now()-ts, m=Math.floor(diff/60000);
+  if(m<1) return 'just now'; if(m<60) return `${m}m ago`;
+  const h=Math.floor(m/60); if(h<24) return `${h}h ago`;
+  const day=Math.floor(h/24); if(day<7) return `${day}d ago`;
+  return new Date(ts).toLocaleDateString();
+}
+function greeting() {
+  const h=new Date().getHours();
+  if(h<12) return 'morning'; if(h<17) return 'afternoon'; return 'evening';
+}
+
+/* ══════════════════════════════════════════
+   SEED DATA (identical schema to manager app)
+══════════════════════════════════════════ */
+const SEED_MANAGERS = [
+  { id:'M001', pin:'0000', name:'Milco',  area:'Line 1 / RMI',    role:'manager' },
+  { id:'M002', pin:'0000', name:'Ali',    area:'Line 2 / Line 4', role:'manager' },
+  { id:'ADMIN',pin:'0000', name:'Admin',  area:'All Lines',        role:'manager' },
+];
+const SEED_WORKERS = [
+  {id:'W001',pin:'1234',name:'Sudhir Soni',        skills:['Leading Hand','Batching'],         primaryLine:'L1'},
+  {id:'W002',pin:'1234',name:'Yaser Elyas',         skills:['Batching','Mixing Op'],            primaryLine:'L1'},
+  {id:'W003',pin:'1234',name:'Anil',                skills:['Batching','Mixing Op'],            primaryLine:'L1'},
+  {id:'W004',pin:'1234',name:'Brannon Johnson',     skills:['Mixing Op','Forming Op'],          primaryLine:'L1'},
+  {id:'W005',pin:'1234',name:'Krishna Gurung',      skills:['Mixing Op'],                       primaryLine:'L1'},
+  {id:'W006',pin:'1234',name:'Amandeep Singh',      skills:['Mixing Op','Batching'],            primaryLine:'L1'},
+  {id:'W007',pin:'1234',name:'Sandip Archary',      skills:['Mixing Op'],                       primaryLine:'L1'},
+  {id:'W008',pin:'1234',name:'Truong Son Do',       skills:['Forming Op','Line Op'],            primaryLine:'L1'},
+  {id:'W009',pin:'1234',name:'Rasheed Idowu Busari',skills:['Forming Op'],                      primaryLine:'L1'},
+  {id:'W010',pin:'1234',name:'Hieu Ngo',            skills:['Carton Packer'],                   primaryLine:'L1'},
+  {id:'W011',pin:'1234',name:'Sarisa Chantha',      skills:['Carton Packer','Carton Weighing'], primaryLine:'L1'},
+  {id:'W012',pin:'1234',name:'Fo In Tchung',        skills:['Carton Packer'],                   primaryLine:'L1'},
+  {id:'W013',pin:'1234',name:'Harprit Kaur Brar',   skills:['Carton Packer'],                   primaryLine:'L1'},
+  {id:'W014',pin:'1234',name:'Harpreet Kaur Brar',  skills:['Carton Packer'],                   primaryLine:'L1'},
+  {id:'W015',pin:'1234',name:'Hong Nguyen',         skills:['Carton Packer'],                   primaryLine:'L1'},
+  {id:'W016',pin:'1234',name:'Trang Nguyen',        skills:['Carton Weighing','Carton Packer'], primaryLine:'L1'},
+  {id:'W017',pin:'1234',name:'Seema',               skills:['Carton Weighing'],                 primaryLine:'L1'},
+  {id:'W018',pin:'1234',name:'Swaraj',              skills:['Robot Op','Palletizer'],           primaryLine:'L1'},
+  {id:'W019',pin:'1234',name:'Leshan',              skills:['QC','Inspector'],                  primaryLine:'L1'},
+  {id:'W020',pin:'1234',name:'Kulwinder',           skills:['Carton Packer','Liners'],          primaryLine:'L1'},
+  {id:'W021',pin:'1234',name:'Teresa',              skills:['Carton Packer','Liners'],          primaryLine:'L1'},
+  {id:'W022',pin:'1234',name:'Leonida',             skills:['Carton Packer','Liners'],          primaryLine:'L1'},
+  {id:'W023',pin:'1234',name:'Zahra Mohseni',       skills:['Relief Packer'],                   primaryLine:'L1'},
+  {id:'W024',pin:'1234',name:'Amarjit Kaur',        skills:['Relief Packer'],                   primaryLine:'L1'},
+  {id:'W025',pin:'1234',name:'Sa Ah Fook',          skills:['Relief Packer'],                   primaryLine:'L1'},
+  {id:'W030',pin:'1234',name:'George',              skills:['Leading Hand'],                    primaryLine:'L2'},
+  {id:'W031',pin:'1234',name:'Anaru',               skills:['Mixing Op','Forming Op'],          primaryLine:'L2'},
+  {id:'W032',pin:'1234',name:'Gede',                skills:['Batching','Mixing Op'],            primaryLine:'L2'},
+  {id:'W033',pin:'1234',name:'Manjinder',           skills:['Batching'],                        primaryLine:'L2'},
+  {id:'W034',pin:'1234',name:'Sandeep',             skills:['Forming Op','Line Op'],            primaryLine:'L2'},
+  {id:'W035',pin:'1234',name:'Cosimo',              skills:['Line Op'],                         primaryLine:'L2'},
+  {id:'W036',pin:'1234',name:'Eric',                skills:['Line Op','Forming Op'],            primaryLine:'L2'},
+  {id:'W037',pin:'1234',name:'Rosemarie Pancho',    skills:['Forming Inspector','Inspector'],   primaryLine:'L2'},
+  {id:'W038',pin:'1234',name:'Dao Mai',             skills:['Fryer Inspector','Inspector'],     primaryLine:'L2'},
+  {id:'W039',pin:'1234',name:'Nadeea',              skills:['QC','Inspector'],                  primaryLine:'L2'},
+  {id:'W040',pin:'1234',name:'Chau',                skills:['Leading Hand PO'],                 primaryLine:'L2'},
+  {id:'W041',pin:'1234',name:'Novelyn',             skills:['Bagging Op'],                      primaryLine:'L2'},
+  {id:'W042',pin:'1234',name:'Requel',              skills:['Carton Former','Carton Packer'],   primaryLine:'L2'},
+  {id:'W043',pin:'1234',name:'Thi Minh Trang',      skills:['Carton Packer'],                   primaryLine:'L2'},
+  {id:'W044',pin:'1234',name:'Arisha',              skills:['Carton Packer'],                   primaryLine:'L2'},
+  {id:'W045',pin:'1234',name:'Ivy',                 skills:['Carton Packer'],                   primaryLine:'L2'},
+  {id:'W046',pin:'1234',name:'Taliilagi Solaese',   skills:['Spiral Inspector','Inspector'],    primaryLine:'L2'},
+  {id:'W047',pin:'1234',name:'Edward Kennedy',      skills:['Palletizer'],                      primaryLine:'L2'},
+  {id:'W048',pin:'1234',name:'Kelly',               skills:['QC'],                              primaryLine:'L2'},
+  {id:'W049',pin:'1234',name:'Shirin',              skills:['Carton Packer','Inspector'],       primaryLine:'L2'},
+  {id:'W050',pin:'1234',name:'Wayne Cohen',         skills:['Inspector','Carton Packer'],       primaryLine:'L2'},
+  {id:'W051',pin:'1234',name:'Jou Yu',              skills:['Relief Packer'],                   primaryLine:'L2'},
+  {id:'W052',pin:'1234',name:'Simarjeet Kaur',      skills:['Relief Packer'],                   primaryLine:'L2'},
+  {id:'W060',pin:'1234',name:'Edmun',               skills:['Leading Hand'],                    primaryLine:'L4'},
+  {id:'W061',pin:'1234',name:'Phung Nguyen',        skills:['Bowl Chopper Op','Mixing Op'],     primaryLine:'L4'},
+  {id:'W062',pin:'1234',name:'Thang',               skills:['Mixing Op','Batching'],            primaryLine:'L4'},
+  {id:'W063',pin:'1234',name:'Joby',                skills:['Batching'],                        primaryLine:'L4'},
+  {id:'W064',pin:'1234',name:'Ketut',               skills:['Forming Op'],                      primaryLine:'L4'},
+  {id:'W065',pin:'1234',name:'Jaspreet',            skills:['Line Op'],                         primaryLine:'L4'},
+  {id:'W066',pin:'1234',name:'Huy Nguyen',          skills:['Line Op'],                         primaryLine:'L4'},
+  {id:'W067',pin:'1234',name:'Min Lay',             skills:['Forming Inspector'],               primaryLine:'L4'},
+  {id:'W068',pin:'1234',name:'Rosamary Chambugong', skills:['Fryer Inspector','Inspector'],     primaryLine:'L4'},
+  {id:'W069',pin:'1234',name:'Fang',                skills:['QC','Inspector'],                  primaryLine:'L4'},
+  {id:'W070',pin:'1234',name:'Dian',                skills:['Leading Hand HC'],                 primaryLine:'L4'},
+  {id:'W071',pin:'1234',name:'Puka Nida',           skills:['Bagging Op'],                      primaryLine:'L4'},
+  {id:'W072',pin:'1234',name:'Touch Yen',           skills:['Inspector'],                       primaryLine:'L4'},
+  {id:'W073',pin:'1234',name:'Lin',                 skills:['Inspector'],                       primaryLine:'L4'},
+  {id:'W074',pin:'1234',name:'Kelwin',              skills:['Inspector'],                       primaryLine:'L4'},
+  {id:'W075',pin:'1234',name:'Jarayin Abing',       skills:['Inspector'],                       primaryLine:'L4'},
+  {id:'W076',pin:'1234',name:'Thi Doan',            skills:['QC'],                              primaryLine:'L4'},
+  {id:'W077',pin:'1234',name:'Dat Hoang',           skills:['CPS Op'],                          primaryLine:'L4'},
+  {id:'W078',pin:'1234',name:'Anacita Azarcon',     skills:['Relief Inspector'],                primaryLine:'L4'},
+  {id:'W079',pin:'1234',name:'Sonia Gomari',        skills:['Relief Inspector'],                primaryLine:'L4'},
+  {id:'W090',pin:'1234',name:'Meenambigai Maran',   skills:['Carton Former'],                   primaryLine:'KLK'},
+  {id:'W091',pin:'1234',name:'Andi Annisa',         skills:['Carton Packer'],                   primaryLine:'KLK'},
+  {id:'W110',pin:'1234',name:'Munaf',               skills:['Leading Hand'],                    primaryLine:'RMI'},
+  {id:'W111',pin:'1234',name:'Zheng Guo',           skills:['QC'],                              primaryLine:'RMI'},
+  {id:'W112',pin:'1234',name:'Rosemarie Manula',    skills:['Pallet Jack'],                     primaryLine:'RMI'},
+  {id:'W140',pin:'1234',name:'Damien',              skills:['Cleaning'],                        primaryLine:'CLN'},
+  {id:'W150',pin:'1234',name:'Shire',               skills:['Pallet Mover Production'],         primaryLine:'PLT'},
+];
+const SEED_LINES = [
+  {id:'L1', name:'Line 1', description:'Beef patty production'},
+  {id:'L2', name:'Line 2', description:'Chicken / poultry'},
+  {id:'L4', name:'Line 4', description:'Mixed nugget & tender'},
+  {id:'RMI',name:'RMI',    description:'Receiving & materials'},
+  {id:'KLK',name:'Kliklok',description:'Cartoning & palletising'},
+  {id:'CLN',name:'Cleaning',description:'Sanitation crew'},
+  {id:'PLT',name:'Pallet Mover',description:'Pallet movement & yard'},
+];
+const SEED_PRODUCTS = [
+  {id:'P01',name:'10:1 Local Beef Patties',lineId:'L1'},
+  {id:'P02',name:'Japan 10:1 Beef Patties',lineId:'L1'},
+  {id:'P10',name:'KFC Chicken Nuggets 14.4kg',lineId:'L2'},
+  {id:'P14',name:'B&G Chicken Nuggets 12x500g',lineId:'L4'},
+  {id:'P15',name:'Coles Plain Chk Tenders',lineId:'L4'},
+  {id:'PRMI',name:'RMI / Goods Receiving',lineId:'RMI'},
+  {id:'PKLK',name:'Kliklok Cartoning',lineId:'KLK'},
+  {id:'PCLN',name:'Daily Sanitation',lineId:'CLN'},
+  {id:'PPLT',name:'Yard Movement',lineId:'PLT'},
+];
+const SHIFT_DEFAULTS = {
+  L1:{start:'06:00',end:'15:30'},L2:{start:'05:00',end:'13:30'},
+  L4:{start:'05:00',end:'13:30'},RMI:{start:'07:00',end:'15:30'},
+  KLK:{start:'07:30',end:'16:00'},CLN:{start:'05:30',end:'14:00'},
+  PLT:{start:'05:30',end:'14:00'},
+};
+const SEED_VERSION = 4;
+
+function buildSampleRoster(weekStart, status='published') {
+  const shifts=[], productMap={L1:'P01',L2:'P10',L4:'P14',RMI:'PRMI',KLK:'PKLK',CLN:'PCLN',PLT:'PPLT'};
+  const workersByLine={};
+  SEED_WORKERS.forEach(w=>{ if(!workersByLine[w.primaryLine]) workersByLine[w.primaryLine]=[]; workersByLine[w.primaryLine].push(w); });
+  const rolesByLine={
+    L1:[{r:'Leading Hand',c:1},{r:'Batching',c:2},{r:'Mixing Op',c:4},{r:'Forming Op',c:2},{r:'Carton Packer',c:6},{r:'Robot Op',c:1},{r:'QC',c:1}],
+    L2:[{r:'Leading Hand',c:1},{r:'Line Op',c:2},{r:'Forming Inspector',c:1},{r:'Fryer Inspector',c:1},{r:'Bagging Op',c:1},{r:'Carton Packer',c:3},{r:'QC',c:1}],
+    L4:[{r:'Leading Hand',c:1},{r:'Bowl Chopper Op',c:1},{r:'Line Op',c:2},{r:'Forming Inspector',c:1},{r:'Bagging Op',c:2},{r:'Inspector',c:3},{r:'QC',c:1}],
+    RMI:[{r:'Leading Hand',c:1},{r:'Inspector',c:3},{r:'Loader',c:2}],
+    KLK:[{r:'Carton Packer',c:5},{r:'Palletizer',c:2}],
+    CLN:[{r:'Cleaning',c:3}],
+    PLT:[{r:'Pallet Mover Production',c:1},{r:'Pallet Mover Pack out',c:1}],
+  };
+  for(let day=0;day<5;day++){
+    Object.keys(rolesByLine).forEach(lineId=>{
+      const def=SHIFT_DEFAULTS[lineId]||{start:'06:00',end:'14:30'};
+      const lineWorkers=[...(workersByLine[lineId]||[])];
+      rolesByLine[lineId].forEach(slot=>{
+        for(let i=0;i<slot.c;i++){
+          const idx=lineWorkers.findIndex(w=>w.skills.includes(slot.r));
+          let worker=null;
+          if(idx>=0){ worker=lineWorkers[idx]; lineWorkers.splice(idx,1); }
+          shifts.push({id:uuid(),day,lineId,productId:productMap[lineId],role:slot.r,workerId:worker?worker.id:null,startTime:def.start,endTime:def.end});
+        }
+      });
+    });
+  }
+  return {weekStart:isoWeekKey(weekStart),status,shifts,publishedAt:status==='published'?Date.now():null,version:1,changeLog:[]};
+}
+
+async function seedIfEmpty() {
+  const seeded = await Store.get('_seeded');
+  if (seeded && (seeded.version||0) >= SEED_VERSION) return;
+  const all = [...SEED_MANAGERS, ...SEED_WORKERS.map(w=>({...w,role:'worker',status:'active'}))];
+  await Store.set('users', all);
+  await Store.set('lines', SEED_LINES);
+  await Store.set('products', SEED_PRODUCTS);
+  const thisMonday = startOfWeek(new Date());
+  const lastMonday = addDays(thisMonday,-7);
+  if(!(await Store.get(`roster:${isoWeekKey(lastMonday)}`)))
+    await Store.set(`roster:${isoWeekKey(lastMonday)}`, buildSampleRoster(lastMonday,'published'));
+  if(!(await Store.get(`roster:${isoWeekKey(thisMonday)}`)))
+    await Store.set(`roster:${isoWeekKey(thisMonday)}`, buildSampleRoster(thisMonday,'published'));
+  await Store.set('_seeded',{at:Date.now(),version:SEED_VERSION});
+}
+
+/* ══════════════════════════════════════════
+   NOTIFICATIONS
+══════════════════════════════════════════ */
+async function requestPushPermission() {
+  if(!('Notification' in window)) return 'unsupported';
+  if(Notification.permission === 'granted') return 'granted';
+  const result = await Notification.requestPermission();
+  return result;
+}
+
+function firePushNotif(title, body) {
+  if(!('Notification' in window)) return;
+  if(Notification.permission !== 'granted') return;
+  try {
+    const n = new Notification(title, {
+      body,
+      icon: '',
+      badge: '',
+      tag: 'shiftline-roster',
+      requireInteraction: false,
+    });
+    setTimeout(()=>n.close(), 10000);
+  } catch(e) {}
+}
+
+/* ══════════════════════════════════════════
+   AUTH CONTEXT
+══════════════════════════════════════════ */
+const AuthCtx = createContext(null);
+
+function AuthProvider({ children }) {
+  const [user, setUser]       = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(()=>{(async()=>{
+    const cur = Store._session;
+    if(cur && cur.id) {
+      const users = (await Store.get('users')) || [];
+      const live  = users.find(u => u.id === cur.id);
+      if(live) setUser(live);
+      else Store._session = null;
+    }
+    setLoading(false);
+  })();}, []);
+
+  const login = async (id, pin) => {
+    const cid = (id||'').toUpperCase().trim(), cpin = (pin||'').trim();
+    if(!cid||!cpin) return {ok:false, error:'Enter your Worker ID and PIN.'};
+    const pinOk = (stored,entered) => {
+      const s=String(stored??'').trim(), p=String(entered??'').trim();
+      return s===p || s.padStart(4,'0')===p.padStart(4,'0');
+    };
+    // Look up from Supabase
+    const users = (await Store.get('users')) || [];
+    const hit = users.find(x => x.id.toUpperCase()===cid && pinOk(x.pin,cpin));
+    if(!hit) {
+      const idHit = users.find(x=>x.id.toUpperCase()===cid);
+      if(!idHit) return {ok:false, error:`No account found for "${cid}".`};
+      return {ok:false, error:`Wrong PIN. Workers use 1234 · Managers use 0000.`};
+    }
+    if(hit.role === 'manager') return {ok:false, error:`Manager accounts use the desktop app.`};
+    Store._session = hit;
+    setUser(hit);
+    return {ok:true};
+  };
+
+  const logout = async () => { Store._session = null; setUser(null); };
+  return <AuthCtx.Provider value={{user,loading,login,logout}}>{children}</AuthCtx.Provider>;
+}
+const useAuth = () => useContext(AuthCtx);
+
+/* ══════════════════════════════════════════
+   LOGIN SCREEN
+══════════════════════════════════════════ */
+function LoginScreen() {
+  const { login }     = useAuth();
+  const [id, setId]   = useState('');
+  const [pin, setPin] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const handleSubmit = async () => {
+    setBusy(true); setErr('');
+    const r = await login(id, pin);
+    if(!r.ok) { setErr(r.error); setBusy(false); }
+  };
+
+  const onKey = (e) => { if(e.key==='Enter') handleSubmit(); };
+
+  return (
+    <div className="login-screen">
+      <div className="login-top">
+        <div className="login-mark"></div>
+        <div className="login-title">Shiftline</div>
+        <div className="login-subtitle">My Shifts</div>
+      </div>
+      <div className="login-bottom">
+        <div className="login-field">
+          <label className="login-label">Worker ID</label>
+          <input className="login-input" type="text" autoCapitalize="characters"
+            placeholder="e.g. W010" value={id}
+            onChange={e=>setId(e.target.value)} onKeyDown={onKey}
+          />
+        </div>
+        <div className="login-field">
+          <label className="login-label">PIN</label>
+          <input className="login-input" type="password" inputMode="numeric"
+            placeholder="4-digit PIN" maxLength={4} value={pin}
+            onChange={e=>setPin(e.target.value)} onKeyDown={onKey}
+          />
+        </div>
+        {err && <div className="login-error">{err}</div>}
+        <button className="login-btn" onClick={handleSubmit} disabled={busy||!id||!pin}>
+          {busy ? '…' : 'Sign In →'}
+        </button>
+        <div className="login-hint">
+          Demo: W010 · PIN 1234<br/>
+          W037 · W060 · W090 also work
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   NOTIFICATION BANNER
+══════════════════════════════════════════ */
+function NotifBanner({ notifs, onView, onDismiss }) {
+  const [visible, setVisible] = useState(false);
+  const unread = notifs.filter(n=>n.unread);
+
+  useEffect(()=>{
+    if(unread.length > 0) {
+      const t = setTimeout(()=>setVisible(true), 600);
+      return ()=>clearTimeout(t);
+    }
+  }, [unread.length]);
+
+  const handleView = () => { setVisible(false); setTimeout(onView, 400); };
+  const handleDismiss = () => { setVisible(false); onDismiss(); };
+
+  if(unread.length === 0) return null;
+  const latest = unread[0];
+
+  return (
+    <div className={`notif-banner ${visible?'visible':''}`}>
+      <div className="nb-eyebrow">🔔 New notification</div>
+      <div className="nb-title">{latest.title}</div>
+      <div className="nb-body">{latest.summary}</div>
+      <div className="nb-actions">
+        <button className="nb-btn primary" onClick={handleView}>View schedule →</button>
+        <button className="nb-btn secondary" onClick={handleDismiss}>Dismiss</button>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   HOME TAB
+══════════════════════════════════════════ */
+function HomeTab({ onGoNotifs }) {
+  const { user } = useAuth();
+  const [roster, setRoster]   = useState(null);
+  const [lines, setLines]     = useState([]);
+  const [products, setProducts] = useState([]);
+  const [rdos, setRdos]       = useState([]);
+  const [unread, setUnread]   = useState(0);
+  const weekStart = startOfWeek(new Date());
+
+  useEffect(()=>{(async()=>{
+    const r = await Store.get(`roster:${isoWeekKey(weekStart)}`);
+    setRoster(r);
+    setLines((await Store.get('lines')) || []);
+    setProducts((await Store.get('products')) || []);
+    const allRdo = (await Store.get('rdoRequests')) || [];
+    setRdos(allRdo.filter(x=>x.workerId===user.id));
+    const n = (await Store.get(`notif:${user.id}`)) || [];
+    setUnread(n.filter(x=>x.unread).length);
+  })();}, [user.id]);
+
+  const myShifts = roster?.shifts?.filter(s=>s.workerId===user.id).sort((a,b)=>a.day-b.day||a.startTime.localeCompare(b.startTime)) || [];
+  const totalH   = myShifts.reduce((s,sh)=>s+parseFloat(durationHours(sh.startTime,sh.endTime)),0).toFixed(1);
+  const daysOn   = new Set(myShifts.map(s=>s.day)).size;
+
+  const rdoByDate = {};
+  rdos.forEach(r=>{ rdoByDate[r.date]=r; });
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayDayIdx = [0,1,2,3,4].findIndex(i=>{ const d=addDays(weekStart,i); d.setHours(0,0,0,0); return d.getTime()===today.getTime(); });
+
+  // Find next upcoming shift
+  const upcoming = myShifts.find(s => {
+    const d = addDays(weekStart, s.day); d.setHours(0,0,0,0);
+    if(d.getTime() > today.getTime()) return true;
+    if(d.getTime() === today.getTime()) {
+      const [h,m]=s.startTime.split(':').map(Number);
+      return (h*60+m) > (today.getHours()*60+today.getMinutes());
+    }
+    return false;
+  });
+  const upcomingDate = upcoming ? addDays(weekStart, upcoming.day) : null;
+  const upcomingLine = upcoming ? lines.find(l=>l.id===upcoming.lineId) : null;
+  const upcomingProd = upcoming ? products.find(p=>p.id===upcoming.productId) : null;
+
+  const weekDays = [0,1,2,3,4].map(i=>({
+    dayIdx:i,
+    date:addDays(weekStart,i),
+    shifts:myShifts.filter(s=>s.day===i),
+    rdo:rdoByDate[ymd(addDays(weekStart,i))],
+    isToday:i===todayDayIdx,
+  }));
+
+  if(!roster || roster.status!=='published') return (
+    <div className="tab-scroll fade-up">
+      <div className="home-hero">
+        <div className="hero-greeting">Good {greeting()},</div>
+        <div className="hero-name">{user.name.split(' ')[0]}<em>.</em></div>
+        <div className="hero-meta">Week of {fmtFullDate(weekStart)}</div>
+      </div>
+      <div className="no-roster">
+        <div className="no-roster-icon">📋</div>
+        <div className="no-roster-title">No roster yet</div>
+        <div className="no-roster-sub">Your manager hasn't published this week's schedule. Check back soon.</div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="tab-scroll fade-up">
+      <div className="home-hero">
+        <div className="hero-greeting">Good {greeting()},</div>
+        <div className="hero-name">{user.name.split(' ')[0]}<em>.</em></div>
+        <div className="hero-meta">Week of {fmtFullDate(weekStart)} · {myShifts.length} shifts · {totalH}h</div>
+      </div>
+
+      <div className="stats-strip">
+        <div className="stat-cell"><div className="stat-n">{daysOn}</div><div className="stat-l">Days on</div></div>
+        <div className="stat-cell"><div className="stat-n">{5-daysOn}</div><div className="stat-l">Days off</div></div>
+        <div className="stat-cell"><div className="stat-n">{totalH}</div><div className="stat-l">Hours</div></div>
+      </div>
+
+      {unread > 0 && (
+        <div style={{margin:'14px 16px 0'}}>
+          <button onClick={onGoNotifs} style={{
+            width:'100%',padding:'12px 16px',background:'var(--accent)',color:'#fff',
+            display:'flex',alignItems:'center',justifyContent:'space-between',
+            fontFamily:"'IBM Plex Mono',monospace",fontSize:11,textTransform:'uppercase',letterSpacing:'.08em',
+            cursor:'pointer',border:'none'
+          }}>
+            <span>🔔 {unread} new notification{unread!==1?'s':''}</span>
+            <span>View →</span>
+          </button>
+        </div>
+      )}
+
+      {upcoming && (
+        <div className="home-section">
+          <div className="section-eyebrow">Next shift</div>
+          <div className="nsc">
+            <div className="nsc-header">
+              <div className="nsc-date-col">
+                <div className="nsc-day-name">{DAY_NAMES[upcomingDate.getDay()]}</div>
+                <div className="nsc-day-num">{upcomingDate.getDate()}</div>
+                <div className="nsc-month">{MONTHS[upcomingDate.getMonth()]}</div>
+              </div>
+              <div className="nsc-time-col">
+                <div className="nsc-time">{upcoming.startTime}<span className="nsc-arrow">→</span>{upcoming.endTime}</div>
+                <div className="nsc-hours">{durationHours(upcoming.startTime,upcoming.endTime)} hours</div>
+              </div>
+            </div>
+            <div className="nsc-body">
+              <div className="nsc-role">{upcoming.role}</div>
+              <div className="nsc-line">on {upcomingLine?.name || upcoming.lineId}</div>
+              {upcomingProd && <div className="nsc-prod">{upcomingProd.name}</div>}
+              {upcoming.day === todayDayIdx && <span className="nsc-today-pill">Today</span>}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="home-section">
+        <div className="section-eyebrow">This week</div>
+        {weekDays.map(({dayIdx,date,shifts,rdo,isToday})=>{
+          if(rdo) return (
+            <div key={dayIdx} className="week-row rdo">
+              <div className="wr-date">
+                <div className="wr-dname">{DAY_NAMES[date.getDay()]}</div>
+                <div className="wr-dnum" style={{color:'var(--confirm)'}}>{date.getDate()}</div>
+                <div className="wr-dmonth">{MONTHS[date.getMonth()]}</div>
+              </div>
+              <div><div className="rdo-label">{rdo.type}</div><div className="wr-sub">Time off{rdo.note?` · ${rdo.note}`:''}</div></div>
+              <span style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:9,color:'var(--confirm)',textTransform:'uppercase',letterSpacing:'.08em',border:'1px solid var(--confirm)',padding:'2px 6px'}}>OFF</span>
+            </div>
+          );
+          if(shifts.length === 0) return (
+            <div key={dayIdx} className="week-row off">
+              <div className="wr-date">
+                <div className="wr-dname">{DAY_NAMES[date.getDay()]}</div>
+                <div className="wr-dnum">{date.getDate()}</div>
+                <div className="wr-dmonth">{MONTHS[date.getMonth()]}</div>
+              </div>
+              <div className="off-label">Day off</div>
+              <div></div>
+            </div>
+          );
+          return shifts.map((s,i)=>{
+            const line=lines.find(l=>l.id===s.lineId);
+            return (
+              <div key={s.id} className="week-row" style={isToday?{borderLeft:'3px solid var(--accent)'}:{}}>
+                <div className="wr-date">
+                  {i===0 && <>
+                    <div className="wr-dname">{DAY_NAMES[date.getDay()]}</div>
+                    <div className="wr-dnum" style={isToday?{color:'var(--accent)'}:{}}>{date.getDate()}</div>
+                    <div className="wr-dmonth">{MONTHS[date.getMonth()]}</div>
+                  </>}
+                </div>
+                <div>
+                  <div className="wr-role">{s.role}</div>
+                  <div className="wr-sub">{line?.name||s.lineId}</div>
+                </div>
+                <div>
+                  <div className="wr-time">{s.startTime}</div>
+                  <div className="wr-h">{durationHours(s.startTime,s.endTime)}h</div>
+                </div>
+              </div>
+            );
+          });
+        })}
+      </div>
+      <div style={{height:8}}></div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   SCHEDULE TAB
+══════════════════════════════════════════ */
+function ScheduleTab() {
+  const { user }  = useAuth();
+  const [weekStart, setWeekStart] = useState(()=>startOfWeek(new Date()));
+  const [roster, setRoster]     = useState(null);
+  const [lines, setLines]       = useState([]);
+  const [products, setProducts] = useState([]);
+  const [rdos, setRdos]         = useState([]);
+  const [filter, setFilter]     = useState('all');
+
+  useEffect(()=>{(async()=>{
+    setRoster(await Store.get(`roster:${isoWeekKey(weekStart)}`));
+    setLines((await Store.get('lines'))||[]);
+    setProducts((await Store.get('products'))||[]);
+    const allRdo=(await Store.get('rdoRequests'))||[];
+    setRdos(allRdo.filter(x=>x.workerId===user.id));
+  })();}, [weekStart,user.id]);
+
+  const myShifts = roster?.status==='published'
+    ? roster.shifts.filter(s=>s.workerId===user.id).sort((a,b)=>a.day-b.day||a.startTime.localeCompare(b.startTime))
+    : [];
+
+  const rdoByDate={};
+  rdos.forEach(r=>{ rdoByDate[r.date]=r; });
+
+  const items = [0,1,2,3,4].flatMap(day=>{
+    const date=addDays(weekStart,day);
+    const shifts=myShifts.filter(s=>s.day===day);
+    const rdo=rdoByDate[ymd(date)];
+    if(rdo) return [{type:'rdo',day,date,rdo}];
+    if(shifts.length===0) return [{type:'off',day,date}];
+    return shifts.map(s=>({type:'shift',day,date,shift:s}));
+  });
+
+  const filteredItems = filter==='shifts' ? items.filter(i=>i.type==='shift') :
+                        filter==='off'    ? items.filter(i=>i.type!=='shift') : items;
+
+  return (
+    <div className="tab-scroll fade-up" style={{display:'flex',flexDirection:'column'}}>
+      <div className="sched-nav" style={{flexShrink:0}}>
+        <button className="sched-nav-btn" onClick={()=>setWeekStart(addDays(weekStart,-7))}>← Prev</button>
+        <div className="sched-week-label">{fmtDate(weekStart)} – {fmtDate(addDays(weekStart,4))}</div>
+        <button className="sched-nav-btn" onClick={()=>setWeekStart(addDays(weekStart,7))}>Next →</button>
+      </div>
+      <div className="sched-pill" style={{flexShrink:0}}>
+        {[['all','All'],['shifts','Shifts'],['off','Days off']].map(([v,l])=>(
+          <button key={v} className={`sched-pill-btn${filter===v?' active':''}`} onClick={()=>setFilter(v)}>{l}</button>
+        ))}
+      </div>
+
+      {!roster || roster.status!=='published' ? (
+        <div className="sched-empty">No published roster for this week</div>
+      ) : filteredItems.length===0 ? (
+        <div className="sched-empty">Nothing to show</div>
+      ) : filteredItems.map((item,i)=>{
+        const {date,day} = item;
+        if(item.type==='rdo') return (
+          <div key={i} className="sched-rdo">
+            <div>
+              <div className="sli-dname">{DAY_NAMES[date.getDay()]}</div>
+              <div className="sli-dnum" style={{color:'var(--confirm)'}}>{date.getDate()}</div>
+              <div className="sli-dmonth">{MONTHS[date.getMonth()]}</div>
+            </div>
+            <div>
+              <div style={{fontFamily:"'Instrument Serif',serif",fontSize:22,color:'var(--confirm)'}}>{item.rdo.type}</div>
+              <div style={{fontSize:12,color:'var(--ink-2)',marginTop:3}}>Time off{item.rdo.note?` · ${item.rdo.note}`:''}</div>
+            </div>
+          </div>
+        );
+        if(item.type==='off') return (
+          <div key={i} className="sched-off">
+            <div>
+              <div className="sli-dname">{DAY_NAMES[date.getDay()]}</div>
+              <div className="sli-dnum">{date.getDate()}</div>
+              <div className="sli-dmonth">{MONTHS[date.getMonth()]}</div>
+            </div>
+            <div style={{fontSize:13,color:'var(--ink-3)',fontStyle:'italic'}}>Day off</div>
+          </div>
+        );
+        const s=item.shift;
+        const line=lines.find(l=>l.id===s.lineId);
+        const prod=products.find(p=>p.id===s.productId);
+        return (
+          <div key={s.id} className="sli">
+            <div>
+              <div className="sli-dname">{DAY_NAMES[date.getDay()]}</div>
+              <div className="sli-dnum">{date.getDate()}</div>
+              <div className="sli-dmonth">{MONTHS[date.getMonth()]}</div>
+            </div>
+            <div>
+              <div className="sli-role">{s.role}</div>
+              <div className="sli-line">{line?.name||s.lineId}</div>
+              {prod&&<div className="sli-prod">{prod.name}</div>}
+            </div>
+            <div>
+              <div className="sli-time">{s.startTime}</div>
+              <div className="sli-time" style={{color:'var(--ink-3)',marginTop:1}}>{s.endTime}</div>
+              <div className="sli-hrs">{durationHours(s.startTime,s.endTime)}h</div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   NOTIFICATIONS TAB
+══════════════════════════════════════════ */
+function NotificationsTab({ onRead }) {
+  const { user } = useAuth();
+  const [items, setItems]   = useState([]);
+  const [perm, setPerm]     = useState(typeof Notification!=='undefined' ? Notification.permission : 'unsupported');
+  const [simBusy, setSimBusy] = useState(false);
+
+  const load = async () => {
+    setItems((await Store.get(`notif:${user.id}`))||[]);
+  };
+  useEffect(()=>{ load(); }, [user.id]);
+
+  const markAllRead = async () => {
+    const unreadIds = items.filter(n=>n.unread).map(n=>n.id);
+    if(unreadIds.length) {
+      await sb.from('notifications').update({ unread: false }).in('id', unreadIds);
+    }
+    const updated = items.map(n=>({...n,unread:false}));
+    setItems(updated);
+    onRead && onRead();
+  };
+
+  const clearAll = async () => {
+    if(!confirm('Clear all notifications?')) return;
+    await sb.from('notifications').delete().eq('worker_id', user.id);
+    setItems([]);
+    onRead && onRead();
+  };
+
+  const requestPerm = async () => {
+    const r = await requestPushPermission();
+    setPerm(r);
+  };
+
+  // Simulate manager publishing a roster update
+  const simulateRosterUpdate = async () => {
+    setSimBusy(true);
+    const weekStart = startOfWeek(new Date());
+    const notif = {
+      id: uuid(),
+      ts: Date.now(),
+      unread: true,
+      weekStart: isoWeekKey(weekStart),
+      title: `Roster updated — week of ${fmtDate(weekStart)}`,
+      summary: `Your manager has published an updated schedule. 2 changes affect your shifts. Tap to review.`,
+      type: 'roster',
+    };
+    const updated = [notif, ...items].slice(0,30);
+    await Store.set(`notif:${user.id}`, updated);
+    setItems(updated);
+    onRead && onRead();
+    firePushNotif(notif.title, notif.summary);
+    setSimBusy(false);
+  };
+
+  const unread = items.filter(n=>n.unread).length;
+
+  return (
+    <div className="tab-scroll fade-up">
+      <div className="notif-header-bar">
+        <div className="notif-count-label">{unread} unread · {items.length} total</div>
+        <div className="notif-acts">
+          {unread>0 && <button className="notif-act" onClick={markAllRead}>Mark read</button>}
+          {items.length>0 && <button className="notif-act" onClick={clearAll}>Clear</button>}
+        </div>
+      </div>
+
+      {perm !== 'granted' && perm !== 'unsupported' && (
+        <div className="perm-card">
+          <div className="perm-title">Enable push notifications</div>
+          <div className="perm-body">
+            Allow notifications so you're alerted when your manager publishes roster changes — even when the app is in the background.
+          </div>
+          <button className="perm-btn" onClick={requestPerm}>
+            {perm==='denied' ? 'Notifications blocked in browser settings' : 'Allow notifications →'}
+          </button>
+        </div>
+      )}
+
+      {items.length === 0 ? (
+        <div className="notif-empty">No notifications yet</div>
+      ) : items.map(n=>(
+        <div key={n.id} className={`ni${n.unread?' unread':''}`}>
+          <div className={`ni-dot${n.unread?' unread':' read'}`}></div>
+          <div className="ni-body">
+            <div className="ni-title">{n.title}</div>
+            <div className="ni-summary">{n.summary}</div>
+            <div className="ni-time">{relativeTime(n.ts)}</div>
+            <span className={`ni-tag ${n.type==='rdo'?'rdo':'roster'}`}>{n.type||'roster'}</span>
+          </div>
+        </div>
+      ))}
+
+      <div className="demo-card">
+        <div className="demo-label">Demo · Simulate roster update</div>
+        <button className="demo-btn" onClick={simulateRosterUpdate} disabled={simBusy}>
+          {simBusy ? 'Sending…' : '📋 Manager published new roster →'}
+        </button>
+        <div style={{marginTop:8,fontSize:11,color:'var(--ink-3)',fontFamily:"'IBM Plex Mono',monospace",lineHeight:1.6}}>
+          In production, this fires automatically when your manager publishes from the desktop app.
+          {perm==='granted' ? ' A system notification will appear.' : ' Grant permission above for system alerts.'}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   PROFILE TAB
+══════════════════════════════════════════ */
+function ProfileTab() {
+  const { user, logout } = useAuth();
+  const [perm, setPerm] = useState(typeof Notification!=='undefined' ? Notification.permission : 'unsupported');
+  const initials = user.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
+  const line = SEED_LINES.find(l=>l.id===user.primaryLine);
+
+  const handlePerm = async () => {
+    const r = await requestPushPermission(); setPerm(r);
+  };
+
+  return (
+    <div className="tab-scroll fade-up">
+      <div className="profile-hero">
+        <div className="profile-avatar">{initials}</div>
+        <div className="profile-name">{user.name}</div>
+        <div className="profile-id">ID: {user.id}</div>
+        {line && <div className="profile-line-tag">{line.name}</div>}
+      </div>
+
+      <div className="profile-section">Account</div>
+      <div className="profile-row">
+        <span className="profile-row-label">Worker ID</span>
+        <span className="profile-row-value mono">{user.id}</span>
+      </div>
+      <div className="profile-row">
+        <span className="profile-row-label">Primary Line</span>
+        <span className="profile-row-value">{line?.name || user.primaryLine || '—'}</span>
+      </div>
+      <div className="profile-row">
+        <span className="profile-row-label">Skills</span>
+        <span className="profile-row-value" style={{textAlign:'right',maxWidth:'60%',fontSize:12,color:'var(--ink-3)'}}>
+          {(user.skills||[]).slice(0,3).join(', ')}{(user.skills||[]).length>3?'…':''}
+        </span>
+      </div>
+
+      <div className="profile-section">Notifications</div>
+      <div className="perm-row">
+        <div>
+          <div className="profile-row-label">Push notifications</div>
+          <div style={{fontSize:11,color:'var(--ink-3)',marginTop:3}}>Alert when roster is updated</div>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6}}>
+          <span className={`perm-status ${perm}`}>{perm}</span>
+          {perm!=='granted' && perm!=='denied' && perm!=='unsupported' && (
+            <button className="perm-grant-btn" onClick={handlePerm}>Enable</button>
+          )}
+        </div>
+      </div>
+
+      <div className="profile-section">App</div>
+      <div className="install-card">
+        <strong>Add to Home Screen</strong> for the best experience.<br/>
+        <strong>iOS Safari:</strong> tap Share → "Add to Home Screen"<br/>
+        <strong>Android Chrome:</strong> tap ⋮ menu → "Add to Home Screen"<br/>
+        <span style={{color:'var(--ink-3)',fontSize:11}}>
+          Once installed, notification permission enables system alerts for roster changes.
+        </span>
+      </div>
+
+      <button className="logout-btn" onClick={logout}>Sign Out</button>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════════ */
+function AppShell() {
+  const { user } = useAuth();
+  const [tab, setTab]       = useState('home');
+  const [notifs, setNotifs] = useState([]);
+  const unread = notifs.filter(n=>n.unread).length;
+
+  const loadNotifs = useCallback(async () => {
+    const n = (await Store.get(`notif:${user.id}`)) || [];
+    setNotifs(n);
+  }, [user.id]);
+
+  useEffect(()=>{
+    loadNotifs();
+    // Request notification permission on first app open
+    if(typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      setTimeout(()=>requestPushPermission(), 3000);
+    }
+
+    // ── Supabase Realtime: listen for roster notifications ──
+    const channel = sb
+      .channel(`notify:${user.id}`)
+      .on('broadcast', { event: 'new_notification' }, ({ payload }) => {
+        // Instant UI update — no need to re-fetch DB
+        setNotifs(prev => [payload, ...prev]);
+        firePushNotif(payload.title, payload.summary);
+      })
+      .subscribe((status) => {
+        console.log(`[Shiftline] Realtime ${status} for ${user.id}`);
+      });
+
+    return () => { sb.removeChannel(channel); };
+  }, [user.id]);
+
+  useEffect(()=>{ loadNotifs(); }, [tab]);
+
+  // Fire system notification for unread on app open
+  useEffect(()=>{
+    const unreadItems = notifs.filter(n=>n.unread);
+    if(unreadItems.length>0 && Notification?.permission==='granted') {
+      // Small delay so app is visible first
+      const t = setTimeout(()=>{
+        firePushNotif(
+          `${unreadItems.length} unread notification${unreadItems.length!==1?'s':''}`,
+          unreadItems[0]?.summary || 'Your roster has been updated.'
+        );
+      }, 800);
+      return ()=>clearTimeout(t);
+    }
+  }, [notifs.length]);
+
+  const goToNotifs = () => { setTab('notifs'); };
+
+  const tabs = [
+    {id:'home',     label:'Home',     icon:'⌂'},
+    {id:'schedule', label:'Schedule', icon:'▦'},
+    {id:'notifs',   label:'Alerts',   icon:'◔'},
+    {id:'profile',  label:'Profile',  icon:'◉'},
+  ];
+
+  return (
+    <div className="app-shell">
+      <NotifBanner notifs={notifs} onView={goToNotifs} onDismiss={()=>{}} />
+
+      <div className="app-header">
+        <div className="header-left">
+          <div className="header-mark"></div>
+          <div className="header-brand">
+            <div className="header-title">Shiftline</div>
+            <div className="header-user">{user.name.split(' ')[0]} · {user.id}</div>
+          </div>
+        </div>
+        <button className="bell-btn" onClick={goToNotifs}>
+          <span className="bell-icon">🔔</span>
+          {unread>0 && <span className="bell-badge">{unread>9?'9+':unread}</span>}
+        </button>
+      </div>
+
+      {tab === 'home'     && <HomeTab onGoNotifs={goToNotifs} />}
+      {tab === 'schedule' && <ScheduleTab />}
+      {tab === 'notifs'   && <NotificationsTab onRead={loadNotifs} />}
+      {tab === 'profile'  && <ProfileTab />}
+
+      <div className="bottom-nav">
+        {tabs.map(t=>(
+          <button key={t.id} className={`nav-tab${tab===t.id?' active':''}`} onClick={()=>setTab(t.id)}>
+            <span className="nav-tab-icon">
+              {t.id==='notifs' && unread>0
+                ? <span style={{position:'relative'}}>{t.icon}<span className="nav-dot"></span></span>
+                : t.icon}
+            </span>
+            <span className="nav-tab-label">{t.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   APP ROOT
+══════════════════════════════════════════ */
+function App() {
+  const { user, loading } = useAuth();
+  if(loading) return (
+    <div className="loading-screen">
+      <div className="loading-mark"></div>
+      <div className="loading-name">Shiftline</div>
+      <div className="loading-dot"></div>
+    </div>
+  );
+  return user ? <AppShell /> : <LoginScreen />;
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<AuthProvider><App /></AuthProvider>);
+</script>
+
+<!-- ── PWA: Service Worker + Install Prompt ── -->
+<script>
+(function() {
+  // ── 1. Register service worker ──
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('[SW] Registered, scope:', reg.scope))
+        .catch(err => console.warn('[SW] Registration failed:', err));
+    });
+  }
+
+  // ── 2. Android "Add to Home Screen" install prompt ──
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBanner();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    hideInstallBanner();
+    deferredPrompt = null;
+    console.log('[PWA] App installed');
+  });
+
+  function showInstallBanner() {
+    if (document.getElementById('sl-install-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'sl-install-banner';
+    banner.innerHTML = `
+      <style>
+        #sl-install-banner {
+          position: fixed; bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+          left: 12px; right: 12px; z-index: 9999;
+          background: #1a1614; border: 1px solid #4a423b;
+          border-radius: 12px; padding: 14px 16px;
+          display: flex; align-items: center; gap: 12px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+          font-family: 'IBM Plex Sans', sans-serif;
+          animation: sl-slide-up 0.3s ease;
+        }
+        @keyframes sl-slide-up {
+          from { transform: translateY(20px); opacity: 0; }
+          to   { transform: translateY(0);    opacity: 1; }
+        }
+        #sl-install-banner .sl-ib-icon {
+          width: 40px; height: 40px; border-radius: 10px;
+          background: #dc4a2a; display: flex; align-items: center;
+          justify-content: center; font-size: 20px; flex-shrink: 0;
+        }
+        #sl-install-banner .sl-ib-text { flex: 1; }
+        #sl-install-banner .sl-ib-title {
+          color: #f5f1ea; font-size: 13px; font-weight: 600;
+        }
+        #sl-install-banner .sl-ib-sub {
+          color: #7a7068; font-size: 11px; margin-top: 2px;
+        }
+        #sl-install-banner .sl-ib-btn {
+          background: #dc4a2a; color: #f5f1ea; border: none;
+          padding: 8px 14px; border-radius: 8px; font-size: 12px;
+          font-weight: 600; cursor: pointer; white-space: nowrap;
+          font-family: 'IBM Plex Sans', sans-serif;
+        }
+        #sl-install-banner .sl-ib-close {
+          background: none; border: none; color: #7a7068;
+          font-size: 18px; cursor: pointer; padding: 4px;
+          line-height: 1; flex-shrink: 0;
+        }
+      </style>
+      <div class="sl-ib-icon">⚡</div>
+      <div class="sl-ib-text">
+        <div class="sl-ib-title">Install Shiftline</div>
+        <div class="sl-ib-sub">Add to home screen for quick access</div>
+      </div>
+      <button class="sl-ib-btn" id="sl-install-btn">Install</button>
+      <button class="sl-ib-close" id="sl-install-dismiss">✕</button>
+    `;
+    document.body.appendChild(banner);
+
+    document.getElementById('sl-install-btn').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('[PWA] Install outcome:', outcome);
+      hideInstallBanner();
+      deferredPrompt = null;
+    });
+
+    document.getElementById('sl-install-dismiss').addEventListener('click', () => {
+      hideInstallBanner();
+      // Don't show again this session
+      sessionStorage.setItem('sl-install-dismissed', '1');
+    });
+  }
+
+  function hideInstallBanner() {
+    const b = document.getElementById('sl-install-banner');
+    if (b) b.remove();
+  }
+
+  // ── 3. iOS "Add to Home Screen" hint ──
+  // Show once per session if on iOS Safari (not already installed)
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInStandalone = window.navigator.standalone === true;
+  const isSafari = /safari/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent);
+  const alreadyDismissed = sessionStorage.getItem('sl-ios-hint-dismissed');
+
+  if (isIOS && isSafari && !isInStandalone && !alreadyDismissed) {
+    setTimeout(() => {
+      if (document.getElementById('sl-ios-hint')) return;
+      const hint = document.createElement('div');
+      hint.id = 'sl-ios-hint';
+      hint.innerHTML = `
+        <style>
+          #sl-ios-hint {
+            position: fixed; bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+            left: 12px; right: 12px; z-index: 9999;
+            background: #1a1614; border: 1px solid #4a423b;
+            border-radius: 12px; padding: 14px 16px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+            animation: sl-slide-up 0.3s ease;
+          }
+          #sl-ios-hint .sl-ih-row {
+            display: flex; align-items: flex-start; gap: 12px;
+          }
+          #sl-ios-hint .sl-ih-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: #dc4a2a; display: flex; align-items: center;
+            justify-content: center; font-size: 20px; flex-shrink: 0;
+          }
+          #sl-ios-hint .sl-ih-text { flex: 1; }
+          #sl-ios-hint .sl-ih-title {
+            color: #f5f1ea; font-size: 13px; font-weight: 600;
+          }
+          #sl-ios-hint .sl-ih-steps {
+            color: #7a7068; font-size: 11px; margin-top: 4px; line-height: 1.6;
+          }
+          #sl-ios-hint .sl-ih-steps b { color: #c4b9a3; }
+          #sl-ios-hint .sl-ih-close {
+            background: none; border: none; color: #7a7068;
+            font-size: 18px; cursor: pointer; padding: 4px; line-height: 1;
+          }
+          #sl-ios-hint .sl-ih-arrow {
+            text-align: center; margin-top: 10px;
+            color: #7a7068; font-size: 11px;
+          }
+        </style>
+        <div class="sl-ih-row">
+          <div class="sl-ih-icon">📱</div>
+          <div class="sl-ih-text">
+            <div class="sl-ih-title">Install Shiftline on iPhone</div>
+            <div class="sl-ih-steps">
+              Tap <b>Share ⬆</b> at the bottom of Safari,<br>
+              then tap <b>"Add to Home Screen"</b>
+            </div>
+          </div>
+          <button class="sl-ih-close" id="sl-ios-dismiss">✕</button>
+        </div>
+        <div class="sl-ih-arrow">▼ tap the share button below ▼</div>
+      `;
+      document.body.appendChild(hint);
+      document.getElementById('sl-ios-dismiss').addEventListener('click', () => {
+        hint.remove();
+        sessionStorage.setItem('sl-ios-hint-dismissed', '1');
+      });
+    }, 4000); // Show 4s after load — give the app time to render
+  }
+})();
+</script>
+</body>
+</html>
