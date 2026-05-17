@@ -881,8 +881,9 @@ const Store = {
 
       if (rErr || !roster) { console.error('[Shiftline] roster upsert:', rErr); return false; }
 
+      await sb.from('shifts').delete().eq('roster_id', roster.id);
       if (shifts && shifts.length > 0) {
-        const { error: sErr } = await sb.from('shifts').upsert(
+        const { error: sErr } = await sb.from('shifts').insert(
           shifts.map(s => ({
             id:         s.id,
             roster_id:  roster.id,
@@ -894,10 +895,9 @@ const Store = {
             start_time: s.startTime,
             end_time:   s.endTime,
             std_count:  s.stdCount || 1,
-          })),
-          { onConflict: 'id' }
+          }))
         );
-        if (sErr) console.error('[Shiftline] shifts upsert:', sErr);
+        if (sErr) console.error('[Shiftline] shifts insert:', sErr);
       }
       return true;
     }
