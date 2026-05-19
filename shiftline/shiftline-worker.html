@@ -362,7 +362,12 @@ function durationHours(s,e) {
   const [sh,sm]=s.split(':').map(Number), [eh,em]=e.split(':').map(Number);
   let m=(eh*60+em)-(sh*60+sm); if(m<0) m+=24*60; return (m/60).toFixed(1);
 }
-function uuid() { return 'id_'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4); }
+function uuid() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
 function relativeTime(ts) {
   const diff=Date.now()-ts, m=Math.floor(diff/60000);
   if(m<1) return 'just now'; if(m<60) return `${m}m ago`;
