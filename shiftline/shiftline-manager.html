@@ -2375,11 +2375,40 @@ function ManagerRoster() {
     setEditing(null);
   };
 
-  const saveDraft = async () => {
+const saveDraft = async () => {
     // Manual save lever — just re-persists the current state, useful as a recovery action
     await persistRoster(current => ({...current}));
     setToast('Draft saved.');
     setTimeout(()=>setToast(''), 2000);
+  };
+
+  const copyDay = async (srcDayIdx, dstDayIdx) => {
+    const srcShifts = roster.shifts.filter(s => s.day === srcDayIdx);
+    if (!srcShifts.length) {
+      setToast('No shifts on that day to copy.');
+      setTimeout(()=>setToast(''), 2500);
+      return;
+    }
+    const srcName = DAY_FULL[addDays(weekStart, srcDayIdx).getDay()];
+    const dstName = DAY_FULL[addDays(weekStart, dstDayIdx).getDay()];
+    const dstHasShifts = roster.shifts.some(s => s.day === dstDayIdx);
+    if (!confirm(`Copy all ${srcShifts.length} shifts from ${srcName} to ${dstName}?${dstHasShifts ? `\n\nExisting shifts on ${dstName} will be replaced.` : ''}`)) return;
+    await persistRoster(current => {
+      const otherShifts = current.shifts.filter(s => s.day !== dstDayIdx);
+      const copied = current.shifts
+        .filter(s => s.day === srcDayIdx)
+        .map(s => ({ ...s, id: uuid(), day: dstDayIdx }));
+      return {
+        ...current,
+        shifts: [...otherShifts, ...copied],
+        changeLog: [...(current.changeLog||[]), {
+          ts: Date.now(), type: 'edit', day: dstDayIdx,
+          summary: `Copied ${copied.length} shifts from ${srcName} → ${dstName}`,
+        }],
+      };
+    });
+    setToast(`Copied ${srcShifts.length} shifts from ${srcName} to ${dstName}.`);
+    setTimeout(()=>setToast(''), 3000);
   };
 
   const publish = async () => {
@@ -2633,12 +2662,27 @@ function ManagerRoster() {
             <div className="day-num" style={{color:'var(--paper)'}}>Lines</div>
             <span className="day-date">{lines.length} active</span>
           </div>
-          {[0,1,2,3,4].map(i => {
+{[0,1,2,3,4].map(i => {
             const d = addDays(weekStart,i);
             return (
               <div key={i} className="r-cell r-day">
                 <div className="day-num">{DAY_FULL[d.getDay()]}</div>
                 <span className="day-date">{fmtDate(d)}</span>
+                <select
+                  style={{marginTop:6,fontSize:9,padding:'2px 4px',background:'rgba(255,255,255,.08)',color:'var(--paper)',border:'1px solid rgba(255,255,255,.2)',fontFamily:"'IBM Plex Mono',monospace",width:'100%',cursor:'pointer',borderRadius:0}}
+                  defaultValue=""
+                  onChange={e=>{
+                    if(e.target.value!==''){
+                      copyDay(i, parseInt(e.target.value));
+                      e.target.value='';
+                    }
+                  }}
+                >
+                  <option value="">Copy to…</option>
+                  {[0,1,2,3,4].filter(j=>j!==i).map(j=>(
+                    <option key={j} value={j}>{DAY_FULL[addDays(weekStart,j).getDay()]}</option>
+                  ))}
+                </select>
               </div>
             );
           })}
@@ -2903,16 +2947,23 @@ function ShiftModal({ shift, mode, users, lines, products, existing, rdoRequests
   );
 }
 
+function WorkerPool() 
 function WorkerPool() {
-  const [users, setUsers] = useState([]);
-  const [lines, setLines] = useState([]);
-  const [filter, setFilter] = useState('');
+  const [users, setUsers]       = useState([]);
+  const [lines, setLines]       = useState([]);
+  const [filter, setFilter]     = useState('');
   const [lineFilter, setLineFilter] = useState('');
+  const [showAdd, setShowAdd]   = useState(false);
+  const [newW, setNewW]         = useState({id:'',name:'',pin:'1234',primaryLine:'L1',skillsRaw:''});
+  const [addErr, setAddErr]     = useState('');
+  const [addBusy, setAddBusy]   = useState(false);
+  const [toast, setToast]       = useState('');
 
-  useEffect(() => {(async () => {
+  const load = async () => {
     setUsers((await Store.get('users')) || []);
     setLines((await Store.get('lines')) || []);
-  })();}, []);
+  };
+  useEffect(() => { load(); }, []);
 
   const workers = users.filter(u => u.role !== 'manager');
   const filtered = workers.filter(w => {
@@ -2924,6 +2975,42 @@ function WorkerPool() {
   const byLine = {};
   workers.forEach(w => { byLine[w.primaryLine] = (byLine[w.primaryLine]||0)+1; });
 
+  const addWorker = async () => {
+    setAddErr('');
+    const cleanId   = (newW.id||'').toUpperCase().trim();
+    const cleanName = (newW.name||'').trim();
+    if (!cleanId || !cleanName) { setAddErr('Worker ID and Name are required.'); return; }
+    if (workers.find(w => w.id === cleanId)) { setAddErr(`ID "${cleanId}" is already in use.`); return; }
+    const skills = newW.skillsRaw.split(',').map(s=>s.trim()).filter(Boolean);
+    setAddBusy(true);
+    const { error } = await sb.from('users').insert({
+      id:           cleanId,
+      name:         cleanName,
+      pin:          (newW.pin||'1234').trim(),
+      role:         'worker',
+      primary_line: newW.primaryLine,
+      skills:       skills,
+      status:       'active',
+    });
+    if (error) { setAddErr(error.message); setAddBusy(false); return; }
+    await load();
+    setShowAdd(false);
+    setNewW({id:'',name:'',pin:'1234',primaryLine:'L1',skillsRaw:''});
+    setToast(`${cleanName} added to the worker pool.`);
+    setTimeout(()=>setToast(''), 3000);
+    setAddBusy(false);
+  };
+
+  const removeWorker = async (wid) => {
+    const w = workers.find(x => x.id === wid);
+    if (!confirm(`Remove ${w?.name || wid} from the worker pool?\n\nThis cannot be undone. Any existing shift assignments will show as unassigned on the roster.`)) return;
+    const { error } = await sb.from('users').delete().eq('id', wid);
+    if (error) { alert('Error removing worker: ' + error.message); return; }
+    await load();
+    setToast(`${w?.name || wid} removed from the worker pool.`);
+    setTimeout(()=>setToast(''), 3000);
+  };
+
   return (
     <div className="fade-up">
       <div className="page-head">
@@ -2933,12 +3020,62 @@ function WorkerPool() {
         </div>
         <div className="page-actions">
           <span className="text-sm muted">{filtered.length} of {workers.length} workers</span>
+          <button className="btn btn-accent" onClick={()=>{setShowAdd(!showAdd);setAddErr('');}}>
+            {showAdd ? '✕ Cancel' : '+ Add Worker'}
+          </button>
         </div>
       </div>
 
+      {toast && <div className="alert confirm mb-4"><span className="alert-mark">✓</span><div>{toast}</div></div>}
+
+      {showAdd && (
+        <div className="card mb-6">
+          <div className="card-head"><div className="card-title">Add new worker</div></div>
+          <div className="grid-2 mb-4">
+            <div>
+              <label className="label">Worker ID</label>
+              <input className="input mono" placeholder="e.g. W200" value={newW.id}
+                onChange={e=>setNewW({...newW,id:e.target.value})} autoCapitalize="characters" />
+            </div>
+            <div>
+              <label className="label">Full Name</label>
+              <input className="input" placeholder="First Last" value={newW.name}
+                onChange={e=>setNewW({...newW,name:e.target.value})} />
+            </div>
+          </div>
+          <div className="grid-2 mb-4">
+            <div>
+              <label className="label">PIN</label>
+              <input className="input mono" placeholder="1234" maxLength={6} value={newW.pin}
+                onChange={e=>setNewW({...newW,pin:e.target.value})} inputMode="numeric" />
+            </div>
+            <div>
+              <label className="label">Primary Line</label>
+              <select className="select" value={newW.primaryLine}
+                onChange={e=>setNewW({...newW,primaryLine:e.target.value})}>
+                {lines.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="mb-4">
+            <label className="label">Skills (comma-separated)</label>
+            <input className="input" placeholder="e.g. Carton Packer, QC, Inspector"
+              value={newW.skillsRaw} onChange={e=>setNewW({...newW,skillsRaw:e.target.value})} />
+            <div style={{marginTop:4,fontSize:11,color:'var(--ink-3)'}}>
+              Use exact role names so the system auto-suggests this worker when assigning shifts.
+            </div>
+          </div>
+          {addErr && <div className="alert mb-4"><span className="alert-mark">!</span><div>{addErr}</div></div>}
+          <button className="btn btn-accent" onClick={addWorker} disabled={addBusy||!newW.id||!newW.name}>
+            {addBusy ? 'Adding…' : 'Add worker →'}
+          </button>
+        </div>
+      )}
+
       <div className="stats">
         {lines.map(l => (
-          <div key={l.id} className="stat" onClick={()=>setLineFilter(lineFilter===l.id?'':l.id)} style={{cursor:'pointer',background:lineFilter===l.id?'var(--paper-2)':'var(--paper)'}}>
+          <div key={l.id} className="stat" onClick={()=>setLineFilter(lineFilter===l.id?'':l.id)}
+            style={{cursor:'pointer',background:lineFilter===l.id?'var(--paper-2)':'var(--paper)'}}>
             <div className="stat-eyebrow">{l.name}</div>
             <div className="stat-num">{byLine[l.id]||0}</div>
             <div className="stat-meta">{l.description}</div>
@@ -2948,7 +3085,8 @@ function WorkerPool() {
 
       <div className="card mb-4">
         <div className="flex gap-3 items-center">
-          <input className="input" placeholder="Search by name or ID…" value={filter} onChange={e=>setFilter(e.target.value)} style={{maxWidth:360}} />
+          <input className="input" placeholder="Search by name or ID…" value={filter}
+            onChange={e=>setFilter(e.target.value)} style={{maxWidth:360}} />
           <select className="select" value={lineFilter} onChange={e=>setLineFilter(e.target.value)} style={{maxWidth:200}}>
             <option value="">All lines</option>
             {lines.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
@@ -2966,11 +3104,12 @@ function WorkerPool() {
               <th>Primary Line</th>
               <th>Skills</th>
               <th>PIN</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
-              <tr><td colSpan="5"><div className="empty-state">No workers match.</div></td></tr>
+              <tr><td colSpan="6"><div className="empty-state">No workers match.</div></td></tr>
             ) : filtered.map(w => (
               <tr key={w.id}>
                 <td className="mono">{w.id}</td>
@@ -2978,6 +3117,13 @@ function WorkerPool() {
                 <td>{lines.find(l=>l.id===w.primaryLine)?.name || w.primaryLine}</td>
                 <td>{w.skills?.map(s => <span key={s} className="skill-chip">{s}</span>)}</td>
                 <td className="mono muted">{w.pin}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-ghost"
+                    style={{borderColor:'var(--accent)',color:'var(--accent)'}}
+                    onClick={()=>removeWorker(w.id)}
+                  >Remove</button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -2986,7 +3132,6 @@ function WorkerPool() {
     </div>
   );
 }
-
 function ManagerTimeOff() {
   const { user } = useAuth();
   const [entries, setEntries] = useState([]);
