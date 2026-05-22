@@ -252,6 +252,38 @@ const SUPABASE_URL  = 'https://zqatducmyobthysrzvol.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxYXRkdWNteW9idGh5c3J6dm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjQxMTIsImV4cCI6MjA5NDI0MDExMn0.WOnObAFFPch1owaq4bZ1TTOwGIpS8aiICm9NmDS7NNc';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+// ── Web Push ──────────────────────────────────────────────────
+const VAPID_PUBLIC_KEY = 'BOOIQ_E55JdTI_p4tEjsWTuAJECumaDDVglcgr5tQtMONWU5aP6qIwKAQr7oI1Qji7G64lz89Vx9NQr68du81oE';
+
+function urlBase64ToUint8Array(b64) {
+  const pad = '='.repeat((4 - b64.length % 4) % 4);
+  const raw = atob((b64 + pad).replace(/-/g,'+').replace(/_/g,'/'));
+  const out = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+
+async function subscribeToPush(userId) {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    let sub   = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+    await sb.from('push_subscriptions').upsert(
+      { worker_id: userId, subscription: JSON.parse(JSON.stringify(sub)) },
+      { onConflict: 'worker_id' }
+    );
+    console.log('[Shiftline] Push subscription saved');
+  } catch (e) {
+    console.warn('[Shiftline] Push subscribe failed:', e);
+  }
+}
+
 /* ══════════════════════════════════════════
    STORE — Supabase-backed
 ══════════════════════════════════════════ */
@@ -542,10 +574,14 @@ async function seedIfEmpty() {
 /* ══════════════════════════════════════════
    NOTIFICATIONS
 ══════════════════════════════════════════ */
-async function requestPushPermission() {
+async function requestPushPermission(userId) {
   if(!('Notification' in window)) return 'unsupported';
-  if(Notification.permission === 'granted') return 'granted';
+  if(Notification.permission === 'granted') {
+    if (userId) await subscribeToPush(userId);
+    return 'granted';
+  }
   const result = await Notification.requestPermission();
+  if (result === 'granted' && userId) await subscribeToPush(userId);
   return result;
 }
 
@@ -1012,8 +1048,8 @@ function NotificationsTab({ onRead }) {
     onRead && onRead();
   };
 
-  const requestPerm = async () => {
-    const r = await requestPushPermission();
+const requestPerm = async () => {
+    const r = await requestPushPermission(user.id);
     setPerm(r);
   };
 
@@ -1099,8 +1135,8 @@ function ProfileTab() {
   const initials = user.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
   const line = SEED_LINES.find(l=>l.id===user.primaryLine);
 
-  const handlePerm = async () => {
-    const r = await requestPushPermission(); setPerm(r);
+const handlePerm = async () => {
+    const r = await requestPushPermission(user.id); setPerm(r);
   };
 
   return (
@@ -1175,7 +1211,7 @@ function AppShell() {
     loadNotifs();
     // Request notification permission on first app open
     if(typeof Notification !== 'undefined' && Notification.permission === 'default') {
-      setTimeout(()=>requestPushPermission(), 3000);
+      setTimeout(()=>requestPushPermission(user.id), 3000);
     }
 
     // ── Supabase Realtime: listen for roster notifications ──
