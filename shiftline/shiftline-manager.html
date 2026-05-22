@@ -2447,14 +2447,14 @@ const saveDraft = async () => {
     const weekLabel = fmtDate(weekStart);
     const changeCount = newChanges.length;
 
-    for (const wid of affectedWorkers) {
-      const title   = `Roster ${prevVersion === 0 ? 'published' : 'updated'} — week of ${weekLabel}`;
-      const summary = prevVersion === 0
-        ? `Your schedule for the week of ${weekLabel} is ready. Open Shiftline to view your shifts.`
-        : changeCount > 0
-        ? `${changeCount} change${changeCount !== 1 ? 's' : ''} to the roster affect your schedule. Open Shiftline to review.`
-        : `Your weekly schedule has been updated. Open Shiftline to review.`;
+    const title   = `Roster ${prevVersion === 0 ? 'published' : 'updated'} — week of ${weekLabel}`;
+    const summary = prevVersion === 0
+      ? `Your schedule for the week of ${weekLabel} is ready. Open Shiftline to view your shifts.`
+      : changeCount > 0
+      ? `${changeCount} change${changeCount !== 1 ? 's' : ''} to the roster affect your schedule. Open Shiftline to review.`
+      : `Your weekly schedule has been updated. Open Shiftline to review.`;
 
+    for (const wid of affectedWorkers) {
       // 1. Persist to Supabase
       const { data: notifRow } = await sb.from('notifications').insert({
         worker_id:  wid,
