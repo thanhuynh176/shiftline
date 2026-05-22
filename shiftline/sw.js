@@ -1,62 +1,75 @@
-/* ─────────────────────────────────────────────
-   Shiftline Service Worker  v1.0
-   Handles: install prompt eligibility, offline shell
-───────────────────────────────────────────── */
+// Shiftline Service Worker — v2 (Web Push enabled)
 
-const CACHE_NAME = 'shiftline-shell-v1';
-const SHELL_URL  = '/shiftline-worker.html';
+const CACHE = 'shiftline-v2';
+const SHELL = ['/', '/shiftline-worker.html'];
 
-// ── Install: cache the app shell ──
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.add(SHELL_URL))
-      .then(() => self.skipWaiting())
+// ── Install: cache the app shell ──────────────────────────────
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())
   );
 });
 
-// ── Activate: clear old caches, take control immediately ──
-self.addEventListener('activate', event => {
-  event.waitUntil(
+// ── Activate: clean old caches ────────────────────────────────
+self.addEventListener('activate', e => {
+  e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(
-        keys
-          .filter(k => k !== CACHE_NAME)
-          .map(k => caches.delete(k))
-      )
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
 
-// ── Fetch: network-first for API/Supabase, cache fallback for shell ──
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+// ── Fetch: network-first, fall back to cache ──────────────────
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
+  );
+});
 
-  // Always go network-first for Supabase and CDN calls
-  const isExternal = url.origin !== self.location.origin;
-  if (isExternal) return; // let browser handle CDN/API requests normally
+// ── Push: show notification when a push event arrives ─────────
+// This fires even when the app is completely closed.
+self.addEventListener('push', e => {
+  let data = {};
+  try { data = e.data?.json() || {}; } catch (_) {}
 
-  // For navigation requests (page load), try network then fall back to shell
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .catch(() => caches.match(SHELL_URL))
-    );
-    return;
-  }
+  const title   = data.title   || 'Shiftline';
+  const body    = data.body    || data.summary || 'Your roster has been updated.';
+  const weekStart = data.weekStart || '';
 
-  // For same-origin assets (icons, manifest): cache-first
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        // Cache valid responses
-        if (response && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+  e.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon:              '/icons/icon-192.png',
+      badge:             '/icons/icon-192.png',
+      tag:               'shiftline-roster',
+      requireInteraction: false,
+      vibrate:           [200, 100, 200],
+      data:              { weekStart, url: '/shiftline-worker.html' },
+    })
+  );
+});
+
+// ── Notification click: open or focus the app ─────────────────
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      // If app window already open, focus it
+      for (const client of list) {
+        if (client.url.includes('shiftline') && 'focus' in client) {
+          return client.focus();
         }
-        return response;
-      });
+      }
+      // Otherwise open a new window
+      const url = e.notification.data?.url || '/shiftline-worker.html';
+      return clients.openWindow(url);
     })
   );
 });
