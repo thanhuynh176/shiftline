@@ -2481,6 +2481,28 @@ const saveDraft = async () => {
       });
     }
 
+    // Send real Web Push notifications (works when app is closed/background)
+    try {
+      const pushRes = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON}`,
+          'apikey': SUPABASE_ANON,
+        },
+        body: JSON.stringify({
+          workerIds: [...affectedWorkers],
+          title,
+          summary,
+          weekStart: isoWeekKey(weekStart),
+        }),
+      });
+      const pushData = await pushRes.json();
+      console.log('[Shiftline] Push result:', pushData);
+    } catch (e) {
+      console.warn('[Shiftline] Push send failed (non-fatal):', e);
+    }
+
     setSaving(false);
     setToast(`✓ Published v${updated.version} · ${affectedWorkers.size} worker${affectedWorkers.size !== 1 ? 's' : ''} notified`);
     setTimeout(() => setToast(''), 4000);
