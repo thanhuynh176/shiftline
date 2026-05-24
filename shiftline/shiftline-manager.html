@@ -2487,7 +2487,6 @@ const saveDraft = async () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON}`,
           'apikey': SUPABASE_ANON,
         },
         body: JSON.stringify({
