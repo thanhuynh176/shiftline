@@ -6,11 +6,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Shiftline">
+<meta name="apple-mobile-web-app-title" content="Crewboard">
 <meta name="theme-color" content="#1a1614">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-<title>Shiftline · My Shifts</title>
+<title>Crewboard · My Shifts</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -80,7 +80,7 @@ input{font-family:inherit;font-size:inherit;color:inherit;border-radius:0;-webki
 .notif-banner{position:fixed;top:0;left:0;right:0;z-index:9999;background:var(--ink);border-bottom:3px solid var(--accent);padding:16px 20px;padding-top:calc(16px + var(--safe-t));transform:translateY(-120%);transition:transform .4s cubic-bezier(.22,1,.36,1)}
 .notif-banner.visible{transform:translateY(0)}
 .nb-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin-bottom:4px}
-.nb-title{font-family:'Instrument Serif',serif;font-size:22px;color:var(--paper);line-height:1.1;margin-bottom:3px}
+.nb-title{font-family:'Instrument Serif',serif;font-size:26px;color:var(--paper);line-height:1.1;margin-bottom:3px}
 .nb-body{font-size:12px;color:rgba(245,241,234,.65);margin-bottom:12px;line-height:1.5}
 .nb-actions{display:flex;gap:8px}
 .nb-btn{padding:9px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;border:1px solid}
@@ -103,7 +103,7 @@ input{font-family:inherit;font-size:inherit;color:inherit;border-radius:0;-webki
 .home-hero{background:var(--ink);color:var(--paper);padding:20px 20px 24px;position:relative;overflow:hidden}
 .home-hero::after{content:'';position:absolute;right:-30px;bottom:-30px;width:120px;height:120px;background:var(--accent);transform:rotate(45deg);opacity:.07}
 .hero-greeting{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:rgba(245,241,234,.45);margin-bottom:4px}
-.hero-name{font-family:'Instrument Serif',serif;font-size:46px;line-height:.95;letter-spacing:-.01em}
+.hero-name{font-family:'Instrument Serif',serif;font-size:54px;line-height:.95;letter-spacing:-.01em}
 .hero-name em{font-style:italic;color:var(--accent)}
 .hero-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,241,234,.35);margin-top:8px}
 
@@ -123,11 +123,11 @@ input{font-family:inherit;font-size:inherit;color:inherit;border-radius:0;-webki
 .nsc-day-num{font-family:'Instrument Serif',serif;font-size:40px;line-height:1;letter-spacing:-.02em}
 .nsc-month{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,241,234,.5);margin-top:1px}
 .nsc-time-col{text-align:right}
-.nsc-time{font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:.04em}
+.nsc-time{font-family:'IBM Plex Mono',monospace;font-size:26px;letter-spacing:.04em}
 .nsc-arrow{color:var(--accent);margin:0 4px;font-size:14px}
 .nsc-hours{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(245,241,234,.4);margin-top:2px}
 .nsc-body{padding:14px 16px}
-.nsc-role{font-family:'Instrument Serif',serif;font-size:26px;line-height:1.1;margin-bottom:4px}
+.nsc-role{font-family:'Instrument Serif',serif;font-size:32px;line-height:1.1;margin-bottom:4px}
 .nsc-line{font-size:13px;color:var(--ink-2)}
 .nsc-prod{font-size:11px;color:var(--ink-3);font-style:italic;margin-top:2px}
 .nsc-today-pill{background:var(--confirm);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;display:inline-block;margin-top:8px}
@@ -140,7 +140,7 @@ input{font-family:inherit;font-size:inherit;color:inherit;border-radius:0;-webki
 .wr-dname{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3)}
 .wr-dnum{font-family:'Instrument Serif',serif;font-size:30px;line-height:1}
 .wr-dmonth{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em}
-.wr-role{font-size:14px;font-weight:500}
+.wr-role{font-size:16px;font-weight:600}
 .wr-sub{font-size:11px;color:var(--ink-3);margin-top:2px}
 .wr-time{font-family:'IBM Plex Mono',monospace;font-size:12px;white-space:nowrap;color:var(--ink-2);text-align:right}
 .wr-h{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3);text-align:right;margin-top:2px}
@@ -149,7 +149,7 @@ input{font-family:inherit;font-size:inherit;color:inherit;border-radius:0;-webki
 
 .no-roster{padding:32px 20px;text-align:center}
 .no-roster-icon{font-size:40px;margin-bottom:12px;opacity:.4}
-.no-roster-title{font-family:'Instrument Serif',serif;font-size:26px;margin-bottom:6px}
+.no-roster-title{font-family:'Instrument Serif',serif;font-size:32px;margin-bottom:6px}
 .no-roster-sub{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3)}
 
 /* ── SCHEDULE TAB ── */
@@ -168,7 +168,7 @@ input{font-family:inherit;font-size:inherit;color:inherit;border-radius:0;-webki
 .sli-dname{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}
 .sli-dnum{font-family:'Instrument Serif',serif;font-size:32px;line-height:1}
 .sli-dmonth{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;color:var(--ink-3)}
-.sli-role{font-family:'Instrument Serif',serif;font-size:22px;line-height:1.1}
+.sli-role{font-family:'Instrument Serif',serif;font-size:26px;line-height:1.1}
 .sli-line{font-size:12px;color:var(--ink-2);margin-top:3px}
 .sli-prod{font-size:11px;color:var(--ink-3);font-style:italic}
 .sli-time{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-2);white-space:nowrap;text-align:right}
@@ -213,7 +213,7 @@ input{font-family:inherit;font-size:inherit;color:inherit;border-radius:0;-webki
 /* ── PROFILE TAB ── */
 .profile-hero{background:var(--ink);color:var(--paper);padding:32px 20px 28px;text-align:center}
 .profile-avatar{width:70px;height:70px;background:var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:30px;color:#fff;margin-bottom:14px}
-.profile-name{font-family:'Instrument Serif',serif;font-size:32px;line-height:1}
+.profile-name{font-family:'Instrument Serif',serif;font-size:36px;line-height:1}
 .profile-id{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(245,241,234,.4);margin-top:6px;letter-spacing:.1em;text-transform:uppercase}
 .profile-line-tag{margin-top:10px;display:inline-block;padding:3px 10px;border:1px solid rgba(245,241,234,.2);font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:rgba(245,241,234,.5)}
 
@@ -278,9 +278,9 @@ async function subscribeToPush(userId) {
       { worker_id: userId, subscription: JSON.parse(JSON.stringify(sub)) },
       { onConflict: 'worker_id' }
     );
-    console.log('[Shiftline] Push subscription saved');
+    console.log('[Crewboard] Push subscription saved');
   } catch (e) {
-    console.warn('[Shiftline] Push subscribe failed:', e);
+    console.warn('[Crewboard] Push subscribe failed:', e);
   }
 }
 
@@ -668,8 +668,8 @@ function LoginScreen() {
     <div className="login-screen">
       <div className="login-top">
         <div className="login-mark"></div>
-        <div className="login-title">Shiftline</div>
-        <div className="login-subtitle">My Shifts</div>
+        <div className="login-title">Crewboard</div>
+        <div className="login-subtitle">Turosi Food Solutions</div>
       </div>
       <div className="login-bottom">
         <div className="login-field">
@@ -1223,7 +1223,7 @@ function AppShell() {
         firePushNotif(payload.title, payload.summary);
       })
       .subscribe((status) => {
-        console.log(`[Shiftline] Realtime ${status} for ${user.id}`);
+        console.log(`[Crewboard] Realtime ${status} for ${user.id}`);
       });
 
     return () => { sb.removeChannel(channel); };
@@ -1263,7 +1263,7 @@ function AppShell() {
         <div className="header-left">
           <div className="header-mark"></div>
           <div className="header-brand">
-            <div className="header-title">Shiftline</div>
+            <div className="header-title">Crewboard</div>
             <div className="header-user">{user.name.split(' ')[0]} · {user.id}</div>
           </div>
         </div>
@@ -1302,7 +1302,7 @@ function App() {
   if(loading) return (
     <div className="loading-screen">
       <div className="loading-mark"></div>
-      <div className="loading-name">Shiftline</div>
+      <div className="loading-name">Crewboard</div>
       <div className="loading-dot"></div>
     </div>
   );
@@ -1386,7 +1386,7 @@ root.render(<AuthProvider><App /></AuthProvider>);
       </style>
       <div class="sl-ib-icon">⚡</div>
       <div class="sl-ib-text">
-        <div class="sl-ib-title">Install Shiftline</div>
+        <div class="sl-ib-title">Install Crewboard</div>
         <div class="sl-ib-sub">Add to home screen for quick access</div>
       </div>
       <button class="sl-ib-btn" id="sl-install-btn">Install</button>
@@ -1466,7 +1466,7 @@ root.render(<AuthProvider><App /></AuthProvider>);
         <div class="sl-ih-row">
           <div class="sl-ih-icon">📱</div>
           <div class="sl-ih-text">
-            <div class="sl-ih-title">Install Shiftline on iPhone</div>
+            <div class="sl-ih-title">Install Crewboard on iPhone</div>
             <div class="sl-ih-steps">
               Tap <b>Share ⬆</b> at the bottom of Safari,<br>
               then tap <b>"Add to Home Screen"</b>
