@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supahbase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
@@ -497,7 +497,7 @@ const ROLES = [
   'Leading Hand','Leading Hand PO','Leading Hand HC','Batching','Mixing Op','Bowl Chopper Op','Tumbler',
   'Forming Op','Line Op','Skin Op','Forming Inspector','Fryer Inspector','Spiral Inspector',
   'Carton Former','Carton Packer','Carton Weighing','Bagging Op','Robot Op','Palletizer','Labeller','Liners','CPS Op',
-  'QC','Inspector','Verification','Skin Inspector Verification','Scanning/Labels',
+  'QC','Inspector','Verification','Skin Verification','Scanning/Labels',
   'Relief Packer','Relief Inspector','Extra Inspector',
   'Pallet Jack','Loader','Loader/Skin','Pallet Mover Production','Pallet Mover Pack out','Cleaning'
 ];
@@ -643,7 +643,7 @@ const SEED_WORKERS = [
   {id:'W111',pin:'1234',name:'Zheng Guo',skills:['QC'],primaryLine:'RMI'},
   {id:'W112',pin:'1234',name:'Rosemarie Manula',skills:['Pallet Jack'],primaryLine:'RMI'},
   {id:'W113',pin:'1234',name:'Ferdane',skills:['Verification'],primaryLine:'RMI'},
-  {id:'W114',pin:'1234',name:'Frank',skills:['Skin Inspector Verification'],primaryLine:'RMI'},
+  {id:'W114',pin:'1234',name:'Frank',skills:['Skin Verification'],primaryLine:'RMI'},
   {id:'W115',pin:'1234',name:'Soty Pheng',skills:['Scanning/Labels'],primaryLine:'RMI'},
   {id:'W116',pin:'1234',name:'Bele',skills:['Inspector'],primaryLine:'RMI'},
   {id:'W117',pin:'1234',name:'Thi Kim Tuyen',skills:['Inspector'],primaryLine:'RMI'},
@@ -672,7 +672,7 @@ const SHIFT_TEMPLATES = {
   L1:[{role:'Leading Hand',count:1},{role:'Batching',count:2},{role:'Mixing Op',count:4},{role:'Forming Op',count:2},{role:'Carton Packer',count:6},{role:'Carton Weighing',count:2},{role:'Robot Op',count:1},{role:'QC',count:1},{role:'Relief Packer',count:3}],
   L2:[{role:'Leading Hand',count:1},{role:'Mixing Op',count:1},{role:'Batching',count:2},{role:'Forming Op',count:1},{role:'Line Op',count:2},{role:'Forming Inspector',count:1},{role:'Fryer Inspector',count:1},{role:'QC',count:1},{role:'Leading Hand PO',count:1},{role:'Bagging Op',count:1},{role:'Carton Former',count:1},{role:'Carton Packer',count:3},{role:'Spiral Inspector',count:1},{role:'Palletizer',count:1},{role:'Relief Packer',count:2}],
   L4:[{role:'Leading Hand',count:1},{role:'Bowl Chopper Op',count:1},{role:'Mixing Op',count:1},{role:'Batching',count:1},{role:'Forming Op',count:1},{role:'Line Op',count:2},{role:'Forming Inspector',count:1},{role:'Fryer Inspector',count:1},{role:'QC',count:1},{role:'Leading Hand HC',count:1},{role:'Bagging Op',count:1},{role:'Inspector',count:4},{role:'CPS Op',count:1},{role:'Relief Inspector',count:2}],
-  RMI:[{role:'Leading Hand',count:1},{role:'QC',count:1},{role:'Pallet Jack',count:1},{role:'Verification',count:1},{role:'Skin Inspector Verification',count:1},{role:'Scanning/Labels',count:1},{role:'Inspector',count:6},{role:'Loader',count:3},{role:'Loader/Skin',count:1}],
+  RMI:[{role:'Leading Hand',count:1},{role:'QC',count:1},{role:'Pallet Jack',count:1},{role:'Verification',count:1},{role:'Skin Verification',count:1},{role:'Scanning/Labels',count:1},{role:'Inspector',count:6},{role:'Loader',count:3},{role:'Loader/Skin',count:1}],
   KLK:[{role:'Carton Former',count:1},{role:'Carton Packer',count:6},{role:'Palletizer',count:3}],
   CLN:[{role:'Cleaning',count:3}],
   PLT:[{role:'Pallet Mover Production',count:1},{role:'Pallet Mover Pack out',count:1}],
