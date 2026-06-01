@@ -1805,7 +1805,7 @@ function ManagerRoster() {
                       <div className="drop-hint" onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();const src=dragPayload.current;if(!src)return;const empty=dayShifts.find(s=>!s.workerId);if(empty)onShiftDrop(e,empty.id);else setDragOverId(null);}}>drop here</div>
                     ):null}
                     {!draggingId&&(
-                      <button className="line-add" onClick={()=>setEditing({shift:{id:uuid(),day:dayIdx,lineId:line.id,productId:productId||'',role:ROLES[0],workerId:null,startTime:defObj?.start||'06:00',endTime:defObj?.end||'14:30',stdCount:1,shiftType:shiftTab},mode:'new'})}>+ Add shift</button>
+                      <button className="line-add" onClick={()=>{ if(line.id==='RMI'){ const tmpl=SHIFT_TEMPLATES['RMI']||[]; const newShifts=[]; tmpl.forEach(slot=>{ for(let i=0;i<slot.count;i++){ newShifts.push({id:uuid(),day:dayIdx,lineId:line.id,productId:productId||'',role:slot.role,workerId:null,startTime:defObj?.start||'07:00',endTime:defObj?.end||'15:30',stdCount:1,shiftType:shiftTab}); } }); persistRoster(current=>({...current,shifts:[...current.shifts,...newShifts]})); } else { setEditing({shift:{id:uuid(),day:dayIdx,lineId:line.id,productId:productId||'',role:ROLES[0],workerId:null,startTime:defObj?.start||'06:00',endTime:defObj?.end||'14:30',stdCount:1,shiftType:shiftTab},mode:'new'}); } }}>+ Add shift</button>
                     )}
                   </div>
                 );
