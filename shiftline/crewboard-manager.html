@@ -93,6 +93,14 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .r-line-head{background:var(--paper-2);font-weight:600;font-size:13px;border-right:1px solid var(--rule);position:sticky;left:0;z-index:4;display:flex;flex-direction:column;justify-content:space-between}
 .r-line-name{font-family:'Instrument Serif',serif;font-size:24px;line-height:1.1}
 .r-line-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.cat-badges{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.cat-badge{display:inline-flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:2px 6px;border-radius:5px;border:1px solid rgba(26,22,20,.12);line-height:1}
+.cat-ft{background:#d9f2d9;color:#1f6b1f}
+.cat-cc{background:#fdf3cf;color:#8a6d12}
+.cat-ac{background:#fbdcdc;color:#a52a2a}
+.cat-total-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;padding:12px 16px;border:1px solid var(--rule-soft);border-radius:10px;background:var(--paper-2)}
+.cat-total-label{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);margin-right:4px}
+.cat-total-badge{display:inline-flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;padding:5px 10px;border-radius:7px;border:1px solid rgba(26,22,20,.12)}
 .r-line-prod{font-size:11px;color:var(--ink-2);margin-top:8px;font-style:italic}
 /* Shift cards - BIGGER for factory floor readability */
 .shift{border:1px solid var(--rule-soft);background:#fff;padding:10px 12px;margin-bottom:6px;font-size:13px;cursor:pointer;transition:all .1s;position:relative;text-align:left;width:100%;display:block}
@@ -365,7 +373,7 @@ const Store = {
     }
     if (key === 'users') {
       const { data } = await sb.from('users').select('*');
-      return (data||[]).map(u => ({ ...u, primaryLine:u.primary_line, role:u.role||'worker', skills:u.skills||[] }));
+      return (data||[]).map(u => ({ ...u, primaryLine:u.primary_line, role:u.role||'worker', skills:u.skills||[], category:u.category||'FT' }));
     }
     if (key === 'lines') { const { data } = await sb.from('lines').select('*'); return data||[]; }
     if (key === 'products') {
@@ -1610,6 +1618,21 @@ function ManagerRoster() {
   const shiftsByLineDay={};
   lines.forEach(l=>{shiftsByLineDay[l.id]=[[],[],[],[],[]];});
   roster.shifts.filter(s=>(s.shiftType||'day')===shiftTab).forEach(s=>{if(shiftsByLineDay[s.lineId])shiftsByLineDay[s.lineId][s.day].push(s);});
+  const usersById={}; users.forEach(u=>{usersById[u.id]=u;});
+  const catCountsForLine=(lineId)=>{
+    const seen={};
+    (shiftsByLineDay[lineId]||[]).forEach(day=>{day.forEach(s=>{if(s.workerId)seen[s.workerId]=true;});});
+    const c={FT:0,CC:0,AC:0};
+    Object.keys(seen).forEach(wid=>{const cat=(usersById[wid]&&usersById[wid].category)||'FT';if(c[cat]!==undefined)c[cat]++;});
+    return c;
+  };
+  const gridCatTotals=(()=>{
+    const seen={};
+    lines.forEach(l=>{(shiftsByLineDay[l.id]||[]).forEach(day=>{day.forEach(s=>{if(s.workerId)seen[s.workerId]=true;});});});
+    const c={FT:0,CC:0,AC:0};
+    Object.keys(seen).forEach(wid=>{const cat=(usersById[wid]&&usersById[wid].category)||'FT';if(c[cat]!==undefined)c[cat]++;});
+    return c;
+  })();
   const isArvo=shiftTab==='arvo';
   return (
     <div className="fade-up">
@@ -1683,6 +1706,7 @@ function ManagerRoster() {
               <div className="r-cell r-line-head">
                 <div><div className="r-line-name">{line.name}</div><div className="r-line-meta">{line.id}</div></div>
                 <div className="r-line-prod">{line.description}</div>
+                {(()=>{const cc=catCountsForLine(line.id);return (<div className="cat-badges"><span className="cat-badge cat-ft">FT {cc.FT}</span><span className="cat-badge cat-cc">CC {cc.CC}</span><span className="cat-badge cat-ac">AC {cc.AC}</span></div>);})()}
               </div>
               {[0,1,2,3,4].map(dayIdx=>{
                 const dayShifts=shiftsByLineDay[line.id][dayIdx];
@@ -1745,6 +1769,7 @@ function ManagerRoster() {
           ))}
         </div>
       </div>
+      <div className="cat-total-bar"><span className="cat-total-label">Weekly Total · {isArvo?'Arvo':'Day'} Shift</span><span className="cat-total-badge cat-ft">Fulltime (FT): {gridCatTotals.FT}</span><span className="cat-total-badge cat-cc">Company Casual (CC): {gridCatTotals.CC}</span><span className="cat-total-badge cat-ac">Agency Casual (AC): {gridCatTotals.AC}</span><span className="cat-total-badge" style={{background:'var(--paper)'}}>Total Workers: {gridCatTotals.FT+gridCatTotals.CC+gridCatTotals.AC}</span></div>
       {editing&&<ShiftModal shift={editing.shift} mode={editing.mode} users={users} lines={lines} products={products} conflictMap={conflictMap} existing={roster.shifts} rdoRequests={rdoRequests} weekStart={weekStart} shiftTab={shiftTab} onSave={saveShift} onDelete={deleteShift} onClose={()=>setEditing(null)} />}
     </div>
   );
@@ -1823,7 +1848,7 @@ function WorkerPool() {
   const [filter,setFilter]=useState('');
   const [lineFilter,setLineFilter]=useState('');
   const [showAdd,setShowAdd]=useState(false);
-  const [newW,setNewW]=useState({id:'',name:'',pin:'1234',primaryLine:'L1',skillsRaw:''});
+  const [newW,setNewW]=useState({id:'',name:'',pin:'1234',primaryLine:'L1',skillsRaw:'',category:'FT'});
   const [addErr,setAddErr]=useState('');
   const [addBusy,setAddBusy]=useState(false);
   const [toast,setToast]=useState('');
@@ -1845,9 +1870,9 @@ function WorkerPool() {
     if(workers.find(w=>w.id===cleanId)){setAddErr(`ID "${cleanId}" is already in use.`);return;}
     const skills=newW.skillsRaw.split(',').map(s=>s.trim()).filter(Boolean);
     setAddBusy(true);
-    const{error}=await sb.from('users').insert({id:cleanId,name:cleanName,pin:(newW.pin||'1234').trim(),role:'worker',primary_line:newW.primaryLine,skills,status:'active'});
+    const{error}=await sb.from('users').insert({id:cleanId,name:cleanName,pin:(newW.pin||'1234').trim(),role:'worker',primary_line:newW.primaryLine,skills,status:'active',category:newW.category||'FT'});
     if(error){setAddErr(error.message);setAddBusy(false);return;}
-    await load();setShowAdd(false);setNewW({id:'',name:'',pin:'1234',primaryLine:'L1',skillsRaw:''});
+    await load();setShowAdd(false);setNewW({id:'',name:'',pin:'1234',primaryLine:'L1',skillsRaw:'',category:'FT'});
     setToast(`${cleanName} added to the worker pool.`);setTimeout(()=>setToast(''),3000);setAddBusy(false);
   };
   const removeWorker=async(wid)=>{
@@ -1856,6 +1881,11 @@ function WorkerPool() {
     const{error}=await sb.from('users').delete().eq('id',wid);
     if(error){alert('Error: '+error.message);return;}
     await load();setToast(`${w?.name||wid} removed.`);setTimeout(()=>setToast(''),3000);
+  };
+  const saveCategory=async(wid,cat)=>{
+    const{error}=await sb.from('users').update({category:cat}).eq('id',wid);
+    if(error){alert('Error updating category: '+error.message);return;}
+    await load();setToast('Category updated.');setTimeout(()=>setToast(''),2000);
   };
   const savePin=async(wid)=>{
     const newPin=(editPin.newPin||'').trim();
@@ -1884,7 +1914,7 @@ function WorkerPool() {
           </div>
           <div className="grid-2 mb-4">
             <div><label className="label">PIN</label><input className="input mono" placeholder="1234" maxLength={6} value={newW.pin} onChange={e=>setNewW({...newW,pin:e.target.value})} inputMode="numeric" /></div>
-            <div><label className="label">Primary Line</label><select className="select" value={newW.primaryLine} onChange={e=>setNewW({...newW,primaryLine:e.target.value})}>{lines.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select></div>
+            <div><label className="label">Primary Line</label><select className="select" value={newW.primaryLine} onChange={e=>setNewW({...newW,primaryLine:e.target.value})}>{lines.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select></div><div><label className="label">Category</label><select className="select" value={newW.category||'FT'} onChange={e=>setNewW({...newW,category:e.target.value})}><option value="FT">Fulltime (FT)</option><option value="CC">Company Casual (CC)</option><option value="AC">Agency Casual (AC)</option></select></div>
           </div>
           <div className="mb-4">
             <label className="label">Skills (comma-separated)</label>
@@ -1909,7 +1939,7 @@ function WorkerPool() {
             {filtered.length===0?(<tr><td colSpan="6"><div className="empty-state">No workers match.</div></td></tr>):filtered.map(w=>(
               <tr key={w.id}>
                 <td className="mono">{w.id}</td>
-                <td><strong>{w.name}</strong></td>
+                <td><strong>{w.name}</strong><div style={{marginTop:4}}><select className="select" style={{fontSize:11,padding:'2px 6px',width:'auto'}} value={w.category||'FT'} onChange={e=>saveCategory(w.id,e.target.value)}><option value="FT">FT — Fulltime</option><option value="CC">CC — Company Casual</option><option value="AC">AC — Agency Casual</option></select></div></td>
                 <td>{lines.find(l=>l.id===w.primaryLine)?.name||w.primaryLine}</td>
                 <td>{w.skills?.map(s=><span key={s} className="skill-chip">{s}</span>)}</td>
                 <td>
