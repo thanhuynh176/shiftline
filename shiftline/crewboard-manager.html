@@ -423,13 +423,13 @@ const Store = {
       if (rErr||!roster) { console.error('[Crewboard] roster upsert:',rErr); return false; }
       await sb.from('shifts').delete().eq('roster_id',roster.id);
       if (shifts&&shifts.length>0) {
-        const { error: sErr } = await sb.from('shifts').insert(
+        const { error: sErr } = await sb.from('shifts').upsert(
           shifts.map(s => ({
             id:s.id, roster_id:roster.id, day:s.day, line_id:s.lineId,
             product_id:s.productId, role:s.role, worker_id:s.workerId||null,
             start_time:s.startTime, end_time:s.endTime, std_count:s.stdCount||1,
             shift_type:s.shiftType||'day',
-          }))
+          })), {onConflict:'id'}
         );
         if (sErr) console.error('[Crewboard] shifts insert:',sErr);
       }
