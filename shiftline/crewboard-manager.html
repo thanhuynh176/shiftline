@@ -1789,7 +1789,7 @@ function ManagerRoster() {
 function ShiftModal({shift,mode,users,lines,products,existing,rdoRequests,weekStart,shiftTab,onSave,onDelete,onClose}) {
   const [s,setS]=useState({...shift});
   const assignedOnDay=useMemo(()=>{const set=new Set();existing.forEach(x=>{if(x.id!==s.id&&x.day===s.day&&(x.shiftType||'day')===(s.shiftType||'day')&&x.workerId)set.add(x.workerId);});return set;},[existing,s.id,s.day,s.shiftType]);
-  const poolWorkers=users.filter(u=>u.role!=='manager'&&(!assignedOnDay.has(u.id)||u.id===s.workerId));
+  const poolWorkers=users.filter(u=>u.role!=='manager'&&(u.id===s.workerId||((u.shift_assignment||'day')===(shiftTab||'day')&&!assignedOnDay.has(u.id))));
   const eligibleWorkers=poolWorkers.filter(u=>u.skills?.includes(s.role)||u.primaryLine===s.lineId);
   const otherWorkers=poolWorkers.filter(u=>!eligibleWorkers.includes(u));
   const takenCount=users.filter(u=>u.role!=='manager'&&assignedOnDay.has(u.id)&&u.id!==s.workerId).length;
@@ -1881,7 +1881,7 @@ function WorkerPool() {
     if(workers.find(w=>w.id===cleanId)){setAddErr(`ID "${cleanId}" is already in use.`);return;}
     const skills=newW.skillsRaw.split(',').map(s=>s.trim()).filter(Boolean);
     setAddBusy(true);
-    const{error}=await sb.from('users').insert({id:cleanId,name:cleanName,pin:(newW.pin||'1234').trim(),role:'worker',primary_line:newW.primaryLine,skills,status:'active',category:newW.category||'FT'});
+    const{error}=await sb.from('users').insert({id:cleanId,name:cleanName,pin:(newW.pin||'1234').trim(),role:'worker',primary_line:newW.primaryLine,skills,status:'active',category:newW.category||'FT',shift_assignment:newW.shift||'day'});
     if(error){setAddErr(error.message);setAddBusy(false);return;}
     await load();setShowAdd(false);setNewW({id:'',name:'',pin:'1234',primaryLine:'L1',skillsRaw:'',category:'FT'});
     setToast(`${cleanName} added to the worker pool.`);setTimeout(()=>setToast(''),3000);setAddBusy(false);
@@ -1925,7 +1925,7 @@ function WorkerPool() {
           </div>
           <div className="grid-2 mb-4">
             <div><label className="label">PIN</label><input className="input mono" placeholder="1234" maxLength={6} value={newW.pin} onChange={e=>setNewW({...newW,pin:e.target.value})} inputMode="numeric" /></div>
-            <div><label className="label">Primary Line</label><select className="select" value={newW.primaryLine} onChange={e=>setNewW({...newW,primaryLine:e.target.value})}>{lines.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select></div><div><label className="label">Category</label><select className="select" value={newW.category||'FT'} onChange={e=>setNewW({...newW,category:e.target.value})}><option value="FT">Fulltime (FT)</option><option value="CC">Company Casual (CC)</option><option value="AC">Agency Casual (AC)</option></select></div>
+            <div><label className="label">Primary Line</label><select className="select" value={newW.primaryLine} onChange={e=>setNewW({...newW,primaryLine:e.target.value})}>{lines.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select></div><div><label className="label">Category</label><select className="select" value={newW.category||'FT'} onChange={e=>setNewW({...newW,category:e.target.value})}><option value="FT">Fulltime (FT)</option><option value="CC">Company Casual (CC)</option><option value="AC">Agency Casual (AC)</option></select></div><div><label className="label">Shift</label><select className="select" value={newW.shift||'day'} onChange={e=>setNewW({...newW,shift:e.target.value})}><option value="day">Day Shift</option><option value="arvo">Afternoon Shift</option></select></div>
           </div>
           <div className="mb-4">
             <label className="label">Skills (comma-separated)</label>
