@@ -158,10 +158,10 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .skill-chip{display:inline-block;border:1px solid var(--rule-soft);background:var(--paper);padding:2px 8px;font-size:11px;margin:0 4px 4px 0;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}
 /* Login */
 .login-screen{min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
-.login-art{background:var(--ink);color:var(--paper);padding:40px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
-.login-art::before{content:"";position:absolute;inset:0;background-image:linear-gradient(135deg,rgba(220,74,42,.15) 0%,transparent 50%)}
+.login-art{background:#1f3a5f;color:var(--paper);padding:40px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.login-art::before{content:"";position:absolute;inset:0;background-image:linear-gradient(135deg,rgba(176,30,46,.30) 0%,transparent 55%)}
 .login-art-content{position:relative;z-index:1}
-.login-logo{height:48px;width:auto;filter:brightness(0) invert(1);margin-bottom:32px}
+.login-logo{height:48px;width:auto;margin-bottom:32px}
 .login-headline{font-family:'Instrument Serif',serif;font-size:64px;line-height:.95;letter-spacing:-.015em;margin-top:32px}
 .login-headline em{font-style:italic;color:var(--accent)}
 .login-tagline{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.18em;opacity:.6;margin-top:24px;max-width:380px;line-height:1.6}
@@ -1305,8 +1305,8 @@ function LoginScreen() {
       <div className="login-art">
         <div className="login-art-content">
           <img src={LOGO_URI} className="login-logo" alt="Turosi Food Solutions" />
-          <div className="login-headline">Roster <em>two-hundred</em><br/>workers in minutes,<br/>not <em>hours</em>.</div>
-          <div className="login-tagline">Replace the spreadsheet. Catch double-bookings before publish. Notify every affected worker the moment plans change.</div>
+          <div className="login-headline">THE ROSTER, IN YOUR HAND.</div>
+          <div className="login-tagline">From planning to your workers in minutes.</div>
         </div>
         <div className="login-foot">© Crewboard · Built by Thanh · Turosi Food Solutions</div>
       </div>
