@@ -1201,6 +1201,17 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Carton Packer', count:6},
     {role:'Palletizer', count:3},
   ]},
+  PRMI: { positions: [ // RMI / GOODS INWARDS   16
+    {role:'Leading Hand', count:1},
+    {role:'QC', count:1},
+    {role:'Pallet Jack', count:1},
+    {role:'Verification', count:1},
+    {role:'Skin Verification', count:1},
+    {role:'Scaning /Labels', count:1},
+    {role:'Inspector', count:6},
+    {role:'Loader', count:3},
+    {role:'Loader / skin', count:1},
+  ]},
 };
 async function seedIfEmpty() { return; }
 function buildSampleRoster(weekStart, status='draft') {
