@@ -409,7 +409,7 @@ const Store = {
     return null;
   },
   async set(key, value) {
-    if (key === 'currentUser') { Store._session = value; return true; }
+    if (key === 'currentUser') { Store._session = value; return true; } if (Store._session && Store._session.role !== 'manager') { console.warn('Read-only mode: write blocked for role ' + Store._session.role); return false; }
     if (key === '_seeded'||key==='roles'||key==='skuTemplates') return true;
     if (key === 'users'||key==='lines'||key==='products') return true;
     if (key === 'rdoRequests') return true;
@@ -1349,7 +1349,7 @@ function TopBar({subtitle}) {
         <span className="hide-sm">{fmtFullDate(now)}</span>
         <span>·</span>
         <span>{user.name}</span>
-        <span className="pill">{user.role==='manager'?'Manager':'Worker'}</span>
+        <span className="pill">{user.role==='manager'?'Manager':'Read-Only'}</span>
         <button className="btn btn-sm" onClick={logout} style={{borderColor:'var(--rule-soft)'}}>Sign out</button>
       </div>
     </header>
@@ -1436,7 +1436,7 @@ function ManagerRoster() {
       return updated;
     }catch(e){console.error('[Crewboard] save failed',e);setSaveStatus({state:'error',at:null,error:e.message||'Save failed'});return null;}
   },[weekStart,roster]);
-  const workersById=useMemo(()=>{const m={};users.forEach(u=>{if(u.role!=='manager')m[u.id]=u;});return m;},[users]);
+  const workersById=useMemo(()=>{const m={};users.forEach(u=>{if(u.role==='worker')m[u.id]=u;});return m;},[users]);
   const conflictMap=useMemo(()=>{
     if(!roster) return {};
     const c={},byDayWorker={};
@@ -1655,7 +1655,7 @@ function ManagerRoster() {
             <span className={`pill ${roster.status==='published'?'published':'draft'}`}>{roster.status}</span>
             {roster.version>0&&<span className="text-xs muted">v{roster.version}</span>}
             {pendingChanges>0&&<span className="pill accent">{pendingChanges} unpublished change{pendingChanges!==1?'s':''}</span>}
-            <SaveStatus status={saveStatus} />
+            <SaveStatus status={saveStatus} />{user.role!=='manager'&&<span className="pill accent" style={{marginLeft:8}}>Read-Only — viewing as inspector</span>}
           </div>
         </div>
         <div className="page-actions">
@@ -1665,8 +1665,8 @@ function ManagerRoster() {
           <span style={{width:1,background:'var(--rule-soft)'}}></span>
           <button className="btn" onClick={replicatePrev}>↻ Copy Last Week</button>
           {roster.shifts.length===0&&<button className="btn" onClick={generateFromTemplate}>+ Use Template</button>}
-          <button className="btn" onClick={saveDraft} disabled={saveStatus.state==='saving'}>{saveStatus.state==='saving'?'Saving…':'💾 Save Draft'}</button>
-          <button className={`btn ${isArvo?'btn-arvo':'btn-accent'}`} onClick={publish} disabled={saving||(pendingChanges===0&&roster.status==='published')}>
+          <button className="btn" onClick={saveDraft} disabled={user.role!=='manager'||saveStatus.state==='saving'}>{saveStatus.state==='saving'?'Saving…':'💾 Save Draft'}</button>
+          <button className={`btn ${isArvo?'btn-arvo':'btn-accent'}`} onClick={publish} disabled={user.role!=='manager'||saving||(pendingChanges===0&&roster.status==='published')}>
             {saving?'Publishing…':roster.status==='draft'?'Publish Roster':`Publish ${pendingChanges} Change${pendingChanges!==1?'s':''}`}
           </button>
         </div>
@@ -1789,10 +1789,10 @@ function ManagerRoster() {
 function ShiftModal({shift,mode,users,lines,products,existing,rdoRequests,weekStart,shiftTab,onSave,onDelete,onClose}) {
   const [s,setS]=useState({...shift});
   const assignedOnDay=useMemo(()=>{const set=new Set();existing.forEach(x=>{if(x.id!==s.id&&x.day===s.day&&(x.shiftType||'day')===(s.shiftType||'day')&&x.workerId)set.add(x.workerId);});return set;},[existing,s.id,s.day,s.shiftType]);
-  const poolWorkers=users.filter(u=>u.role!=='manager'&&(u.id===s.workerId||((u.shift_assignment||'day')===(shiftTab||'day')&&!assignedOnDay.has(u.id))));
+  const poolWorkers=users.filter(u=>u.role==='worker'&&(u.id===s.workerId||((u.shift_assignment||'day')===(shiftTab||'day')&&!assignedOnDay.has(u.id))));
   const eligibleWorkers=poolWorkers.filter(u=>u.skills?.includes(s.role)||u.primaryLine===s.lineId);
   const otherWorkers=poolWorkers.filter(u=>!eligibleWorkers.includes(u));
-  const takenCount=users.filter(u=>u.role!=='manager'&&assignedOnDay.has(u.id)&&u.id!==s.workerId).length;
+  const takenCount=users.filter(u=>u.role==='worker'&&assignedOnDay.has(u.id)&&u.id!==s.workerId).length;
   const rdoConflict=useMemo(()=>{if(!s.workerId||!weekStart||!rdoRequests)return null;const shiftDate=ymd(addDays(weekStart,s.day));return rdoRequests.find(r=>r.workerId===s.workerId&&r.date===shiftDate)||null;},[s,rdoRequests,weekStart]);
   const lineName=lines.find(l=>l.id===s.lineId)?.name||s.lineId;
   const skuName=products.find(p=>p.id===s.productId)?.name||s.productId||'—';
@@ -1866,7 +1866,7 @@ function WorkerPool() {
   const [editPin,setEditPin]=useState({workerId:null,newPin:''});
   const load=async()=>{setUsers((await Store.get('users'))||[]);setLines((await Store.get('lines'))||[]);};
   useEffect(()=>{load();},[]);
-  const workers=users.filter(u=>u.role!=='manager');
+  const workers=users.filter(u=>u.role==='worker');
   const filtered=workers.filter(w=>{
     if(filter&&!w.name.toLowerCase().includes(filter.toLowerCase())&&!w.id.toLowerCase().includes(filter.toLowerCase()))return false;
     if(lineFilter&&w.primaryLine!==lineFilter)return false;
@@ -1994,7 +1994,7 @@ function ManagerTimeOff() {
   const [busy,setBusy]=useState(false);
   const [toast,setToast]=useState('');
   const [filterWorker,setFilterWorker]=useState('');
-  const refresh=async()=>{const rdos=await listRdoRequests();const usrs=(await Store.get('users'))||[];setEntries(rdos);setUsers(usrs.filter(u=>u.role!=='manager'));};
+  const refresh=async()=>{const rdos=await listRdoRequests();const usrs=(await Store.get('users'))||[];setEntries(rdos);setUsers(usrs.filter(u=>u.role==='worker'));};
   useEffect(()=>{refresh();},[]);
   const assign=async(e)=>{e.preventDefault();if(!workerId||!date)return;setBusy(true);await assignRdo({workerId,date,type,note,assignedBy:user.id});await refresh();setWorkerId('');setDate('');setType('RDO');setNote('');setToast('Time off assigned.');setTimeout(()=>setToast(''),2500);setBusy(false);};
   const remove=async(id)=>{if(!confirm('Remove this time-off entry?'))return;await removeRdo(id);await refresh();};
