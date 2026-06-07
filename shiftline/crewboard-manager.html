@@ -1950,7 +1950,7 @@ function WorkerPool() {
       </div>
       <div className="card" style={{padding:0}}>
         <table className="tbl">
-          <thead><tr><th>ID</th><th>Name</th><th>Primary Line</th><th>Skills</th><th>PIN</th><th>Shift</th><th></th></tr></thead>
+          <thead><tr><th>ID</th><th>Name</th><th>Primary Line</th><th>Shift</th><th>Skills</th><th>PIN</th><th></th></tr></thead>
           <tbody>
             {filtered.length===0?(<tr><td colSpan="7"><div className="empty-state">No workers match.</div></td></tr>):filtered.map(w=>(
               <tr key={w.id}>
