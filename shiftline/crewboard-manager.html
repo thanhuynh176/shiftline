@@ -1893,6 +1893,11 @@ function WorkerPool() {
     if(error){alert('Error: '+error.message);return;}
     await load();setToast(`${w?.name||wid} removed.`);setTimeout(()=>setToast(''),3000);
   };
+  const saveShift=async(wid,sh)=>{
+    const{error}=await sb.from('users').update({shift_assignment:sh}).eq('id',wid);
+    if(error){alert('Error updating shift: '+error.message);return;}
+    await load();setToast('Shift updated.');setTimeout(()=>setToast(''),2000);
+  };
   const saveCategory=async(wid,cat)=>{
     const{error}=await sb.from('users').update({category:cat}).eq('id',wid);
     if(error){alert('Error updating category: '+error.message);return;}
@@ -1945,13 +1950,14 @@ function WorkerPool() {
       </div>
       <div className="card" style={{padding:0}}>
         <table className="tbl">
-          <thead><tr><th>ID</th><th>Name</th><th>Primary Line</th><th>Skills</th><th>PIN</th><th></th></tr></thead>
+          <thead><tr><th>ID</th><th>Name</th><th>Primary Line</th><th>Skills</th><th>PIN</th><th>Shift</th><th></th></tr></thead>
           <tbody>
-            {filtered.length===0?(<tr><td colSpan="6"><div className="empty-state">No workers match.</div></td></tr>):filtered.map(w=>(
+            {filtered.length===0?(<tr><td colSpan="7"><div className="empty-state">No workers match.</div></td></tr>):filtered.map(w=>(
               <tr key={w.id}>
                 <td className="mono">{w.id}</td>
                 <td><strong>{w.name}</strong><div style={{marginTop:4}}><select className="select" style={{fontSize:11,padding:'2px 6px',width:'auto'}} value={w.category||'FT'} onChange={e=>saveCategory(w.id,e.target.value)}><option value="FT">FT — Fulltime</option><option value="CC">CC — Company Casual</option><option value="AC">AC — Agency Casual</option></select></div></td>
                 <td>{lines.find(l=>l.id===w.primaryLine)?.name||w.primaryLine}</td>
+                <td><select className="select" style={{fontSize:11,padding:'2px 6px',width:'auto'}} value={w.shift_assignment||'day'} onChange={e=>saveShift(w.id,e.target.value)}><option value="day">Day</option><option value="arvo">Afternoon</option></select></td>
                 <td>{w.skills?.map(s=><span key={s} className="skill-chip">{s}</span>)}</td>
                 <td>
                   {editPin.workerId===w.id?(
