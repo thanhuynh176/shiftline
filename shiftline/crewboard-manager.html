@@ -1280,8 +1280,8 @@ function AuthProvider({children}) {
     const cleanId=(id||'').toUpperCase().trim(),cleanPin=(pin||'').trim();
     if(!cleanId||!cleanPin) return {ok:false,error:'Enter both your ID and PIN.'};
     const pinMatches=(stored,entered)=>{const s=String(stored??'').trim(),p=String(entered??'').trim();return s===p||s.padStart(4,'0')===p.padStart(4,'0');};
-    const users=(await Store.get('users'))||[];
-    const u=users.find(x=>x.id.toUpperCase()===cleanId&&pinMatches(x.pin,cleanPin));
+  const { data: vlData } = await sb.rpc('verify_login', { p_id: cleanId, p_pin: cleanPin });
+const u = vlData && vlData[0];
     if(u){Store._session=u;setUser(u);return {ok:true};}
     const idMatch=users.find(x=>x.id.toUpperCase()===cleanId);
     if(!idMatch) return {ok:false,error:`No account with ID "${cleanId}".`};
