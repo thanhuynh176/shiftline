@@ -627,8 +627,8 @@ function AuthProvider({ children }) {
       return s===p || s.padStart(4,'0')===p.padStart(4,'0');
     };
     // Look up from Supabase
-    const users = (await Store.get('users')) || [];
-    const hit = users.find(x => x.id.toUpperCase()===cid && pinOk(x.pin,cpin));
+const { data: vlData } = await sb.rpc('verify_login', { p_id: cid, p_pin: cpin });
+const hit = vlData && vlData[0];
     if(!hit) {
       const idHit = users.find(x=>x.id.toUpperCase()===cid);
       if(!idHit) return {ok:false, error:`No account found for "${cid}".`};
