@@ -681,7 +681,7 @@ function LoginScreen() {
         <div className="login-field">
           <label className="login-label">PIN</label>
           <input className="login-input" type="password" inputMode="numeric"
-            placeholder="4-digit PIN" maxLength={4} value={pin}
+            placeholder="6-digit PIN" maxLength={6} value={pin}
             onChange={e=>setPin(e.target.value)} onKeyDown={onKey}
           />
         </div>
