@@ -372,7 +372,7 @@ const Store = {
       return SKU_POSITION_TEMPLATES;
     }
     if (key === 'users') {
-      const { data } = await sb.from('users').select('*');
+      const { data } = await sb.from('users').select('*').neq('status', 'archived');
       return (data||[]).map(u => ({ ...u, primaryLine:u.primary_line, role:u.role||'worker', skills:u.skills||[], category:u.category||'FT' }));
     }
     if (key === 'lines') { const { data } = await sb.from('lines').select('*'); return data||[]; }
@@ -1889,7 +1889,7 @@ function WorkerPool() {
   const removeWorker=async(wid)=>{
     const w=workers.find(x=>x.id===wid);
     if(!confirm(`Remove ${w?.name||wid} from the worker pool?`))return;
-    const{error}=await sb.from('users').delete().eq('id',wid);
+    const{error}=await sb.from('users').update({ status: 'archived' }).eq('id',wid);
     if(error){alert('Error: '+error.message);return;}
     await load();setToast(`${w?.name||wid} removed.`);setTimeout(()=>setToast(''),3000);
   };
