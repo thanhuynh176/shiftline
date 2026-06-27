@@ -1898,7 +1898,7 @@ function WorkerPool() {
     if(error){alert('Error updating shift: '+error.message);return;}
     await load();setToast('Shift updated.');setTimeout(()=>setToast(''),2000);
   };
-  const saveCategory=async(wid,cat)=>{
+  const saveSkills=async(wid,raw)=>{const arr=raw.split(',').map(s=>s.trim()).filter(Boolean);const{error}=await sb.from('users').update({skills:arr}).eq('id',wid);if(error){alert('Error updating skills: '+error.message);return;}await load();setToast('Skills updated.');setTimeout(()=>setToast(''),2000);};const saveCategory=async(wid,cat)=>{
     const{error}=await sb.from('users').update({category:cat}).eq('id',wid);
     if(error){alert('Error updating category: '+error.message);return;}
     await load();setToast('Category updated.');setTimeout(()=>setToast(''),2000);
@@ -1958,7 +1958,7 @@ function WorkerPool() {
                 <td><strong>{w.name}</strong><div style={{marginTop:4}}><select className="select" style={{fontSize:11,padding:'2px 6px',width:'auto'}} value={w.category||'FT'} onChange={e=>saveCategory(w.id,e.target.value)}><option value="FT">FT — Fulltime</option><option value="CC">CC — Company Casual</option><option value="AC">AC — Agency Casual</option></select></div></td>
                 <td>{lines.find(l=>l.id===w.primaryLine)?.name||w.primaryLine}</td>
                 <td><select className="select" style={{fontSize:11,padding:'2px 6px',width:'auto'}} value={w.shift_assignment||'day'} onChange={e=>saveShift(w.id,e.target.value)}><option value="day">Day</option><option value="arvo">Afternoon</option></select></td>
-                <td>{w.skills?.map(s=><span key={s} className="skill-chip">{s}</span>)}</td>
+                <td><input className="input" style={{fontSize:10,padding:'3px 6px',minWidth:140}} defaultValue={(w.skills||[]).join(', ')} onBlur={e=>{if(e.target.value!==(w.skills||[]).join(', '))saveSkills(w.id,e.target.value)}} placeholder="e.g. Mixing Op, Batching" /></td>
                 <td>
                   {editPin.workerId===w.id?(
                     <div className="flex gap-2 items-center">
