@@ -23,7 +23,8 @@
   --shadow-1:0 1px 0 rgba(26,22,20,.08);
   --shadow-2:0 2px 16px rgba(26,22,20,.08);
 }
-select option{background-color:#ffffff;color:#1a1614;} *{box-sizing:border-box;margin:0;padding:0}
+select option{background-color:#ffffff;color:#1a1614;} .lvcal{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft);margin-top:8px}.lvcal-day{background:var(--paper);min-height:90px;padding:8px;display:flex;flex-direction:column}.lvcal-day.today{background:var(--confirm-soft)}.lvcal-dname{font-family:'IBM Plex Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3)}.lvcal-dnum{font-family:'Instrument Serif',serif;font-size:20px;line-height:1;margin-bottom:6px}.lvcal-name{font-size:11px;padding:2px 5px;background:var(--accent-soft);color:var(--accent-deep);border-radius:3px;margin-bottom:3px;line-height:1.3}.lvcal-empty{font-size:10px;color:var(--rule-soft)}.lvcal-nav{display:flex;align-items:center;gap:10px;margin-bottom:4px}.lvcal-range{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-2);min-width:200px}
+*{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 body{min-height:100vh;background-image:radial-gradient(circle at 1px 1px,rgba(26,22,20,.04) 1px,transparent 0);background-size:18px 18px}
 button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
@@ -1989,6 +1990,8 @@ function ManagerTimeOff() {
   const [users,setUsers]=useState([]);
   const [workerId,setWorkerId]=useState('');
   const [date,setDate]=useState('');
+  const [endDate,setEndDate]=useState('');
+  const [calWeek,setCalWeek]=useState(()=>{const d=new Date();const day=(d.getDay()+6)%7;return ymd(addDays(d,-day));});
   const [type,setType]=useState('RDO');
   const [note,setNote]=useState('');
   const [busy,setBusy]=useState(false);
@@ -1996,7 +1999,7 @@ function ManagerTimeOff() {
   const [filterWorker,setFilterWorker]=useState('');
   const refresh=async()=>{const rdos=await listRdoRequests();const usrs=(await Store.get('users'))||[];setEntries(rdos);setUsers(usrs.filter(u=>u.role==='worker'));};
   useEffect(()=>{refresh();},[]);
-  const assign=async(e)=>{e.preventDefault();if(!workerId||!date)return;setBusy(true);await assignRdo({workerId,date,type,note,assignedBy:user.id});await refresh();setWorkerId('');setDate('');setType('RDO');setNote('');setToast('Time off assigned.');setTimeout(()=>setToast(''),2500);setBusy(false);};
+  const assign=async(e)=>{e.preventDefault();if(!workerId||!date)return;const start=date;const finish=endDate&&endDate>=date?endDate:date;setBusy(true);let count=0;let cur=new Date(start+'T00:00:00');const last=new Date(finish+'T00:00:00');while(cur<=last){await assignRdo({workerId,date:ymd(cur),type,note,assignedBy:user.id});count++;cur=addDays(cur,1);}await refresh();setWorkerId('');setDate('');setEndDate('');setType('RDO');setNote('');setToast('Booked '+count+(count===1?' day':' days')+' off.');setTimeout(()=>setToast(''),2500);setBusy(false);};
   const remove=async(id)=>{if(!confirm('Remove this time-off entry?'))return;await removeRdo(id);await refresh();};
   const today=ymd(new Date());
   const findWorker=id=>users.find(u=>u.id===id);
@@ -2010,7 +2013,7 @@ function ManagerTimeOff() {
         <form onSubmit={assign}>
           <div className="grid-2 mb-4">
             <div><label className="label">Worker</label><select className="select" value={workerId} onChange={e=>setWorkerId(e.target.value)} required><option value="">— Select worker —</option>{users.sort((a,b)=>a.name.localeCompare(b.name)).map(w=><option key={w.id} value={w.id}>{w.name} · {w.id}</option>)}</select></div>
-            <div><label className="label">Date</label><input type="date" className="input mono" value={date} min={today} onChange={e=>setDate(e.target.value)} required /></div>
+            <div><label className="label">Start date</label><input type="date" className="input mono" value={date} min={today} onChange={e=>{setDate(e.target.value); if(!endDate||endDate<e.target.value) setEndDate(e.target.value);}} required /></div><div><label className="label">End date</label><input type="date" className="input mono" value={endDate} min={date||today} onChange={e=>setEndDate(e.target.value)} required /></div>
           </div>
           <div className="grid-2 mb-4">
             <div><label className="label">Type</label><select className="select" value={type} onChange={e=>setType(e.target.value)}><option value="RDO">RDO</option><option value="Annual">Annual leave</option><option value="Personal">Personal leave</option><option value="Sick">Sick leave</option><option value="TOIL">TOIL</option></select></div>
@@ -2022,7 +2025,7 @@ function ManagerTimeOff() {
           </div>
         </form>
       </div>
-      <div className="flex gap-3 items-center mb-4 flex-wrap">
+      <div className="card mb-6"><div className="card-head"><div className="card-title">Who's on leave</div></div>{(()=>{const ws=new Date(calWeek+'T00:00:00');const days=[0,1,2,3,4,5,6].map(i=>addDays(ws,i));const todayStr=ymd(new Date());const onDay=(ds)=>entries.filter(r=>r.date===ds);return (<div><div className="lvcal-nav"><button type="button" className="btn btn-sm" onClick={()=>setCalWeek(ymd(addDays(ws,-7)))}>‹ Prev</button><button type="button" className="btn btn-sm" onClick={()=>{const d=new Date();const day=(d.getDay()+6)%7;setCalWeek(ymd(addDays(d,-day)));}}>This week</button><button type="button" className="btn btn-sm" onClick={()=>setCalWeek(ymd(addDays(ws,7)))}>Next ›</button><span className="lvcal-range">{days[0].toLocaleDateString('en-AU',{day:'numeric',month:'short'})} – {days[6].toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})}</span></div><div className="lvcal">{days.map((d,i)=>{const ds=ymd(d);const list=onDay(ds);return (<div key={ds} className={"lvcal-day"+(ds===todayStr?" today":"")}><div className="lvcal-dname">{d.toLocaleDateString('en-AU',{weekday:'short'})}</div><div className="lvcal-dnum">{d.getDate()}</div>{list.length===0?<div className="lvcal-empty">—</div>:list.map(r=>{const w=findWorker(r.workerId);return <div key={r.id} className="lvcal-name" title={r.type}>{w?w.name:r.workerId}</div>;})}</div>);})}</div></div>);})()}</div><div className="flex gap-3 items-center mb-4 flex-wrap">
         <div className="page-eyebrow" style={{marginBottom:0}}>{sorted.length} entr{sorted.length===1?'y':'ies'}</div>
         <select className="select" value={filterWorker} onChange={e=>setFilterWorker(e.target.value)} style={{maxWidth:240}}><option value="">All workers</option>{users.sort((a,b)=>a.name.localeCompare(b.name)).map(w=><option key={w.id} value={w.id}>{w.name}</option>)}</select>
         {filterWorker&&<button className="btn btn-sm btn-ghost" onClick={()=>setFilterWorker('')}>clear</button>}
