@@ -1429,7 +1429,7 @@ function ManagerRoster() {
     const p=(await Store.get('products'))||[];
     const rdo=(await Store.get('rdoRequests'))||[];
     const st=(await Store.get('skuTemplates'))||{};
-    setUsers(u);setLines(l);setProducts(p);setRdoRequests(rdo);setSkuTemplates(st);
+    setUsers(u);setLines(sortLinesForDisplay(l));setProducts(p);setRdoRequests(rdo);setSkuTemplates(st);
     const key=`roster:${isoWeekKey(weekStart)}`;
     let r=await Store.get(key);
     if(!r){r={weekStart:isoWeekKey(weekStart),status:'draft',shifts:[],publishedAt:null,version:0,lastSavedAt:null,changeLog:[]};await Store.set(key,r);}
@@ -2263,7 +2263,7 @@ function SKUTemplatesView() {
     const p=(await Store.get('products'))||[];
     const l=(await Store.get('lines'))||[];
     const t=(await Store.get('skuTemplates'))||{};
-    setProducts(p);setLines(l);setTemplates(t);
+    setProducts(p);setLines(sortLinesForDisplay(l));setTemplates(t);
     if(!selectedPid&&p.length){
       const first=p.find(x=>t[x.id]);
       if(first){setSelectedPid(first.id);setEditPositions([...(t[first.id]?.positions||[])]);}
