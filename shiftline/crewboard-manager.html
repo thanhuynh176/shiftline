@@ -422,17 +422,19 @@ const Store = {
         version:version||0, change_log:changeLog||[], updated_at:new Date().toISOString(),
       },{ onConflict:'week_start' }).select().single();
       if (rErr||!roster) { console.error('[Crewboard] roster upsert:',rErr); return false; }
-      await sb.from('shifts').delete().eq('roster_id',roster.id);
       if (shifts&&shifts.length>0) {
-        const { error: sErr } = await sb.from('shifts').upsert(
-          shifts.map(s => ({
+        const rows = shifts.map(s => ({
             id:s.id, roster_id:roster.id, day:s.day, line_id:s.lineId,
             product_id:s.productId, role:s.role, worker_id:s.workerId||null,
             start_time:s.startTime, end_time:s.endTime, std_count:s.stdCount||1,
             shift_type:s.shiftType||'day',
-          })), {onConflict:'id'}
-        );
-        if (sErr) console.error('[Crewboard] shifts insert:',sErr);
+          }));
+        const { error: sErr } = await sb.from('shifts').upsert(rows, {onConflict:'id'});
+        if (sErr) { console.error('[Crewboard] shifts insert:',sErr); return false; }
+        const keepIds = shifts.map(s=>s.id);
+        await sb.from('shifts').delete().eq('roster_id',roster.id).not('id','in','('+keepIds.map(x=>'"'+x+'"').join(',')+')');
+      } else {
+        await sb.from('shifts').delete().eq('roster_id',roster.id);
       }
       return true;
     }
@@ -497,6 +499,16 @@ const SEED_LINES = [
   {id:'CLN',name:'Cleaning',description:'Sanitation crew',color:'#0a6b8c'},
   {id:'PLT',name:'Pallet Mover',description:'Pallet movement & yard',color:'#5c4a3a'},
 ];
+const LINE_DISPLAY_ORDER = ['L1','L2','L4','RMI','KLK','PLT','CLN'];
+function sortLinesForDisplay(arr){
+  const ord = LINE_DISPLAY_ORDER;
+  return [...(arr||[])].sort((a,b)=>{
+    let ia=ord.indexOf(a.id), ib=ord.indexOf(b.id);
+    if(ia===-1) ia=999; if(ib===-1) ib=999;
+    if(ia!==ib) return ia-ib;
+    return (a.name||'').localeCompare(b.name||'');
+  });
+}
 const SEED_PRODUCTS = [
   // LINE 1
   {id:'P02', name:'JAPAN 10:1 BEEF PATTIES', lineId:'L1'},
@@ -1488,7 +1500,16 @@ function ManagerRoster() {
     });
     return m;
   },[roster,skuTemplates,lines,shiftTab]);
-  const changeSkuForCell=async(lineId,dayIdx,newProductId)=>{
+  const clearCellShifts=async(lineId,dayIdx)=>{
+    await persistRoster(current=>{
+      const had = current.shifts.some(s=>s.lineId===lineId&&s.day===dayIdx&&(s.shiftType||'day')===shiftTab);
+      if(!had) return null;
+      const remaining = current.shifts.filter(s=>!(s.lineId===lineId&&s.day===dayIdx&&(s.shiftType||'day')===shiftTab));
+      return {...current,shifts:remaining,changeLog:[...(current.changeLog||[]),{ts:Date.now(),type:'clear',day:dayIdx,summary:'Cleared shift for '+(lines.find(l=>l.id===lineId)?.name||lineId)}]};
+    });
+    setToast('Shift cleared.');setTimeout(()=>setToast(''),3000);
+  };
+  changeSkuForCell=async(lineId,dayIdx,newProductId)=>{
     const tmpl=skuTemplates[newProductId];
     if(!tmpl||!tmpl.positions?.length){setToast('No position template for this SKU.');setTimeout(()=>setToast(''),3000);return;}
     const defObj=shiftTab==='arvo'?ARVO_DEFAULTS[lineId]:SHIFT_DEFAULTS[lineId];
@@ -1735,10 +1756,11 @@ function ManagerRoster() {
                     {!draggingId&&(
                       <div style={{marginBottom:6,paddingBottom:6,borderBottom:'1px dashed var(--rule-soft)'}}>
                         <select className="select" style={{fontSize:10,padding:'3px 6px',fontFamily:"'IBM Plex Mono',monospace"}}
-                          value={productId||''} onChange={e=>{if(e.target.value)changeSkuForCell(line.id,dayIdx,e.target.value);}}>
+                          value={productId||''} onChange={e=>{if(e.target.value){changeSkuForCell(line.id,dayIdx,e.target.value);}else{clearCellShifts(line.id,dayIdx);}}}>
                           <option value="">— Select SKU —</option>
                           {products.filter(p=>p.lineId===line.id).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
+                        {productId&&<button type="button" onClick={()=>clearCellShifts(line.id,dayIdx)} style={{marginTop:4,fontSize:9,fontFamily:"'IBM Plex Mono',monospace",color:'var(--warn)',background:'none',border:'none',padding:'2px 0',cursor:'pointer',textDecoration:'underline',display:'block'}} title="Remove this shift from the cell">✕ Remove shift</button>}
                         {skuMatchMap[cellKey]&&<div style={{marginTop:4,fontSize:9,fontFamily:"'IBM Plex Mono',monospace",color:'var(--warn)',display:'flex',alignItems:'center',gap:4}} title={skuMatchMap[cellKey].map(i=>`${i.role}: need ${i.needed}, have ${i.have}`).join('\n')}><span>⚠</span><span>{skuMatchMap[cellKey].length} gap{skuMatchMap[cellKey].length!==1?'s':''}</span></div>}
                       </div>
                     )}
@@ -1865,7 +1887,7 @@ function WorkerPool() {
   const [addBusy,setAddBusy]=useState(false);
   const [toast,setToast]=useState('');
   const [editPin,setEditPin]=useState({workerId:null,newPin:''});
-  const load=async()=>{setUsers((await Store.get('users'))||[]);setLines((await Store.get('lines'))||[]);};
+  const load=async()=>{setUsers((await Store.get('users'))||[]);setLines(sortLinesForDisplay((await Store.get('lines'))||[]));};
   useEffect(()=>{load();},[]);
   const workers=users.filter(u=>u.role==='worker');
   const filtered=workers.filter(w=>{
@@ -2054,7 +2076,7 @@ function PrintView() {
   const [compactMode,setCompactMode]=useState(false);
   const load=useCallback(async()=>{
     const[u,l,p,rdo]=await Promise.all([Store.get('users'),Store.get('lines'),Store.get('products'),Store.get('rdoRequests')]);
-    setUsers(u||[]);setLines(l||[]);setProducts(p||[]);setRdoRequests(rdo||[]);
+    setUsers(u||[]);setLines(sortLinesForDisplay(l||[]));setProducts(p||[]);setRdoRequests(rdo||[]);
     setRoster(await Store.get(`roster:${isoWeekKey(weekStart)}`));
   },[weekStart]);
   useEffect(()=>{load();},[load]);
