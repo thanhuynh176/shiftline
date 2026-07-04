@@ -310,6 +310,12 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .w-day-rdo .w-day-num{color:var(--confirm)}
 .w-day-rdo-label{font-family:'Instrument Serif',serif;font-size:22px;color:var(--confirm)}
 .w-day-rdo-sub{font-size:11px;color:var(--ink-2);margin-top:4px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.1em}
+
+.r-day-foot{background:var(--paper);border-top:2px solid rgba(26,26,26,.25);padding:8px 6px;align-content:start}
+.day-foot-title{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.day-foot{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.day-foot .cat-badge{width:100%;justify-content:space-between}
+.day-foot-total{background:#1a1a1a;color:#f5f1ea}
 </style>
 </head>
 <body>
@@ -1754,7 +1760,7 @@ function ManagerRoster() {
               <div className="r-cell r-line-head">
                 <div><div className="r-line-name">{line.name}</div><div className="r-line-meta">{line.id}</div></div>
                 <div className="r-line-prod">{line.description}</div>
-                {(()=>{const cc=catCountsForLine(line.id);return (<div className="cat-badges"><span className="cat-badge cat-ft">FT {cc.FT}</span><span className="cat-badge cat-cc">CC {cc.CC}</span><span className="cat-badge cat-ac">AC {cc.AC}</span></div>);})()}
+                
               </div>
               {[0,1,2,3,4].map(dayIdx=>{
                 const dayShifts=shiftsByLineDay[line.id][dayIdx];
@@ -1824,6 +1830,7 @@ function ManagerRoster() {
               })}
             </React.Fragment>
           ))}
+              {(()=>{const perDay=[0,1,2,3,4].map(di=>{const seen={};lines.forEach(l=>{const day=(shiftsByLineDay[l.id]||[])[di]||[];day.forEach(s=>{if(s.workerId)seen[s.workerId]=true;});});const c={FT:0,CC:0,AC:0};Object.keys(seen).forEach(wid=>{const cat=(usersById[wid]&&usersById[wid].category)||'FT';if(c[cat]!==undefined)c[cat]++;});return c;});return (<React.Fragment><div className="r-cell r-line-head r-day-foot"><div className="day-foot-title">Daily totals</div></div>{perDay.map((c,di)=>(<div key={di} className="r-cell r-day r-day-foot"><div className="day-foot"><span className="cat-badge cat-ft">FT {c.FT}</span><span className="cat-badge cat-cc">CC {c.CC}</span><span className="cat-badge cat-ac">AC {c.AC}</span><span className="cat-badge day-foot-total">Total {c.FT+c.CC+c.AC}</span></div></div>))}</React.Fragment>);})()}
         </div>
       </div>
       <div className="cat-total-bar"><span className="cat-total-label">Weekly Total · {isArvo?'Arvo':'Day'} Shift</span><span className="cat-total-badge cat-ft">Fulltime (FT): {gridCatTotals.FT}</span><span className="cat-total-badge cat-cc">Company Casual (CC): {gridCatTotals.CC}</span><span className="cat-total-badge cat-ac">Agency Casual (AC): {gridCatTotals.AC}</span><span className="cat-total-badge" style={{background:'var(--paper)'}}>Total Workers: {gridCatTotals.FT+gridCatTotals.CC+gridCatTotals.AC}</span></div>
