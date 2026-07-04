@@ -1585,6 +1585,20 @@ function ManagerRoster() {
     });
     setToast(`Copied ${srcShifts.length} shifts.`);setTimeout(()=>setToast(''),3000);
   };
+  const copyLineDay=async(lineId,srcDayIdx,dstDayIdx)=>{
+    const srcShifts=roster.shifts.filter(s=>s.lineId===lineId&&s.day===srcDayIdx&&(s.shiftType||'day')===shiftTab);
+    if(!srcShifts.length){setToast('No shifts on that line/day.');setTimeout(()=>setToast(''),2500);return;}
+    const srcName=DAY_FULL[addDays(weekStart,srcDayIdx).getDay()];
+    const dstName=DAY_FULL[addDays(weekStart,dstDayIdx).getDay()];
+    const lnName=((typeof lines!=='undefined'&&(lines.find(l=>l.id===lineId)||{}).name)||lineId);
+    if(!confirm(`Copy ${srcShifts.length} ${lnName} ${shiftTab} shifts from ${srcName} to ${dstName}?`))return;
+    await persistRoster(current=>{
+      const otherShifts=current.shifts.filter(s=>!(s.lineId===lineId&&s.day===dstDayIdx&&(s.shiftType||'day')===shiftTab));
+      const copied=current.shifts.filter(s=>s.lineId===lineId&&s.day===srcDayIdx&&(s.shiftType||'day')===shiftTab).map(s=>({...s,id:uuid(),day:dstDayIdx}));
+      return{...current,shifts:[...otherShifts,...copied],changeLog:[...(current.changeLog||[]),{ts:Date.now(),type:'edit',day:dstDayIdx,summary:`Copied ${copied.length} ${lnName} shifts from ${srcName} → ${dstName}`}]};
+    });
+    setToast(`Copied ${srcShifts.length} ${lnName} shifts.`);setTimeout(()=>setToast(''),3000);
+  };
   const publish=async()=>{
     const realConflicts=Object.entries(conflictMap).filter(([k,v])=>v!=='rdo');
     if(realConflicts.length){if(!confirm(`There are ${realConflicts.length} conflict(s). Publish anyway?`))return;}
@@ -1762,6 +1776,14 @@ function ManagerRoster() {
                           {products.filter(p=>p.lineId===line.id).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                         {productId&&<button type="button" onClick={()=>clearCellShifts(line.id,dayIdx)} style={{marginTop:4,fontSize:9,fontFamily:"'IBM Plex Mono',monospace",color:'var(--warn)',background:'none',border:'none',padding:'2px 0',cursor:'pointer',textDecoration:'underline',display:'block'}} title="Remove this shift from the cell">✕ Remove shift</button>}
+                    {dayShifts.length>0&&(
+                      <select className="select" style={{fontSize:9,padding:'2px 4px',marginTop:4,width:'100%',cursor:'pointer',borderRadius:0}} defaultValue=""
+                        onChange={e=>{if(e.target.value!==''){copyLineDay(line.id,dayIdx,parseInt(e.target.value));e.target.value='';}}}
+                      >
+                        <option value="">Copy line to…</option>
+                        {[0,1,2,3,4].filter(j=>j!==dayIdx).map(j=><option key={j} value={j}>{DAY_FULL[addDays(weekStart,j).getDay()]}</option>)}
+                      </select>
+                    )}
                         {skuMatchMap[cellKey]&&<div style={{marginTop:4,fontSize:9,fontFamily:"'IBM Plex Mono',monospace",color:'var(--warn)',display:'flex',alignItems:'center',gap:4}} title={skuMatchMap[cellKey].map(i=>`${i.role}: need ${i.needed}, have ${i.have}`).join('\n')}><span>⚠</span><span>{skuMatchMap[cellKey].length} gap{skuMatchMap[cellKey].length!==1?'s':''}</span></div>}
                       </div>
                     )}
