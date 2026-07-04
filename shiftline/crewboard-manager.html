@@ -107,6 +107,9 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 .shift{border:1px solid var(--rule-soft);background:#fff;padding:4px 8px;margin-bottom:3px;font-size:12px;cursor:pointer;transition:all .1s;position:relative;text-align:left;width:100%;display:block}
 .shift:last-child{margin-bottom:0}
 .shift:hover{border-color:var(--ink);box-shadow:var(--shadow-1)}
+.shift-leader{background:#ffef9f;border-color:#e0b400}
+.shift-leader:hover{border-color:#c79a00;box-shadow:var(--shadow-1)}
+.shift-leader .shift-role{color:#7a5c00}
 .shift-role{font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.03em;display:flex;justify-content:space-between;align-items:baseline;gap:6px;color:var(--ink-2)}
 .shift-worker{font-size:13px;font-weight:600;color:var(--ink);margin-top:0;line-height:1.15}
 .shift-worker.empty{color:var(--ink-3);font-style:italic;font-weight:400;font-size:12px}
@@ -1802,7 +1805,7 @@ function ManagerRoster() {
                       const isUnder=understaffMap[shift.id];
                       const isDragging=draggingId===shift.id;
                       const isDragOver=dragOverId===shift.id;
-                      const cls=['shift',isConflict||isRdoConflict?'conflict':'',isUnder?'understaffed':'',isDragging?'is-dragging':'',isDragOver?'drag-over':'',isArvo?'arvo-shift':''].filter(Boolean).join(' ');
+                      const cls=['shift',isConflict||isRdoConflict?'conflict':'',isUnder?'understaffed':'',isDragging?'is-dragging':'',isDragOver?'drag-over':'',isArvo?'arvo-shift':'',(shift.role&&shift.role.indexOf('Leading Hand')===0)?'shift-leader':''].filter(Boolean).join(' ');
                       return (
                         <button key={shift.id} className={cls} draggable={!!shift.workerId}
                           onClick={()=>!draggingId&&setEditing({shift,mode:'edit'})}
