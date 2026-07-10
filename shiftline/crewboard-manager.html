@@ -1387,6 +1387,7 @@ function ManagerApp() {
     {id:'skuTemplates',label:'SKU Templates',icon:'⊞'},
     {id:'print',label:'Print View',icon:'⎩'},
     {id:'changelog',label:'Change Log',icon:'↻'},
+    {id:'whiteboard',label:'The Whiteboard',icon:'✎'},
   ];
   return (
     <>
@@ -1407,6 +1408,7 @@ function ManagerApp() {
           {view==='timeoff'      && <ManagerTimeOff />}
           {view==='skuTemplates' && <SKUTemplatesView />}
           {view==='changelog'    && <ChangeLogView />}
+          {view==='whiteboard'    && <ManagerWhiteboard />}
           {view==='print'        && <PrintView />}
         </main>
       </div>
@@ -2587,6 +2589,83 @@ function SKUTemplatesView() {
 }
 
     /* ── Change Log ── */
+
+    /* ── The Whiteboard (manager announcements) ── */
+    function ManagerWhiteboard(){
+      const { user } = useAuth();
+      const [current, setCurrent] = useState(null);
+      const [draft, setDraft] = useState('');
+      const [saving, setSaving] = useState(false);
+      const [loaded, setLoaded] = useState(false);
+
+      async function load(){
+        const { data } = await sb.from('announcements')
+          .select('*').eq('active', true)
+          .order('created_at', { ascending:false }).limit(1);
+        setCurrent(data && data[0] ? data[0] : null);
+        setLoaded(true);
+      }
+      useEffect(()=>{ load(); }, []);
+
+      async function post(){
+        const msg = draft.trim();
+        if(!msg) return;
+        setSaving(true);
+        await sb.from('announcements').update({ active:false }).eq('active', true);
+        await sb.from('announcements').insert({ message: msg, author: user ? user.name : null, active:true });
+        setDraft('');
+        await load();
+        setSaving(false);
+      }
+
+      async function clearBoard(){
+        setSaving(true);
+        await sb.from('announcements').update({ active:false }).eq('active', true);
+        await load();
+        setSaving(false);
+      }
+
+      return (
+        <div className="fade-up">
+          <div className="page-head">
+            <div>
+              <h1>The Whiteboard</h1>
+              <div className="muted" style={{marginTop:'6px'}}>Post a short message that every worker sees on their app.</div>
+            </div>
+          </div>
+
+          <div className="card pad" style={{marginBottom:'24px'}}>
+            <div style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:'10px',textTransform:'uppercase',letterSpacing:'.12em',color:'var(--ink-3)',marginBottom:'10px'}}>Currently on the board</div>
+            {!loaded ? (
+              <div className="muted">Loading…</div>
+            ) : current ? (
+              <div>
+                <div style={{fontSize:'18px',lineHeight:'1.5',color:'var(--ink)',whiteSpace:'pre-wrap'}}>{current.message}</div>
+                <div className="muted" style={{marginTop:'12px',fontSize:'12px'}}>
+                  {current.author ? 'Posted by ' + current.author : 'Posted'}
+                  {current.created_at ? ' · ' + new Date(current.created_at).toLocaleString() : ''}
+                </div>
+                <button className="btn btn-ghost btn-sm" style={{marginTop:'14px'}} onClick={clearBoard} disabled={saving}>Clear the board</button>
+              </div>
+            ) : (
+              <div className="muted">The board is empty. Post a message below and it will appear for all workers.</div>
+            )}
+          </div>
+
+          <div className="card pad">
+            <div style={{fontFamily:"'IBM Plex Mono',monospace",fontSize:'10px',textTransform:'uppercase',letterSpacing:'.12em',color:'var(--ink-3)',marginBottom:'10px'}}>New message</div>
+            <textarea className="textarea" rows={3} value={draft} maxLength={280}
+              placeholder="e.g. Fire drill at 2pm today — please gather at the north car park."
+              onChange={e=>setDraft(e.target.value)} />
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginTop:'14px',gap:'16px'}}>
+              <span className="muted" style={{fontSize:'12px'}}>{draft.length}/280 · Replaces the current message.</span>
+              <button className="btn btn-accent" onClick={post} disabled={saving || !draft.trim()}>{saving ? 'Posting…' : 'Post to board'}</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     function ChangeLogView(){
       const [weekStart,setWeekStart]=useState(()=>startOfWeek(new Date()));
       const [roster,setRoster]=useState(null);
@@ -2661,7 +2740,3 @@ function SKUTemplatesView() {
   </script>
 </body>
 </html>
-
-             
-
-             <!-- wb -->
