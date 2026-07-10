@@ -1960,6 +1960,11 @@ function WorkerPool() {
     const{error}=await sb.from('users').update({category:cat}).eq('id',wid);
     if(error){alert('Error updating category: '+error.message);return;}
     await load();setToast('Category updated.');setTimeout(()=>setToast(''),2000);
+  }
+const savePrimaryLine=async(wid,pl)=>{
+    const{error}=await sb.from('users').update({primary_line:pl}).eq('id',wid);
+    if(error){alert('Error updating primary_line: '+error.message);return;}
+    await load();setToast('Category updated.');setTimeout(()=>setToast(''),2000);
   };
   const savePin=async(wid)=>{
     const newPin=(editPin.newPin||'').trim();
@@ -2014,7 +2019,7 @@ function WorkerPool() {
               <tr key={w.id}>
                 <td className="mono">{w.id}</td>
                 <td><strong>{w.name}</strong><div style={{marginTop:4}}><select className="select" style={{fontSize:11,padding:'2px 6px',width:'auto'}} value={w.category||'FT'} onChange={e=>saveCategory(w.id,e.target.value)}><option value="FT">FT — Fulltime</option><option value="CC">CC — Company Casual</option><option value="AC">AC — Agency Casual</option></select></div></td>
-                <td>{lines.find(l=>l.id===w.primaryLine)?.name||w.primaryLine}</td>
+                <td><select className="select" style={{fontSize:11,padding:'2px 6px',width:'auto'}} value={w.primaryLine||''} onChange={e=>savePrimaryLine(w.id,e.target.value)}><option value="">— None —</option>{lines.map(l=><option key={l.id} value={l.id}>{l.name}</option>)}</select></td>
                 <td><select className="select" style={{fontSize:11,padding:'2px 6px',width:'auto'}} value={w.shift_assignment||'day'} onChange={e=>saveShift(w.id,e.target.value)}><option value="day">Day</option><option value="arvo">Afternoon</option></select></td>
                 <td><input className="input" style={{fontSize:10,padding:'3px 6px',minWidth:140}} defaultValue={(w.skills||[]).join(', ')} onBlur={e=>{if(e.target.value!==(w.skills||[]).join(', '))saveSkills(w.id,e.target.value)}} placeholder="e.g. Mixing Op, Batching" /></td>
                 <td>
