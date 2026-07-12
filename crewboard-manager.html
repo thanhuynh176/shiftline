@@ -11,7 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
-<style>
+<style>h
 :root{
   --paper:#f5f1ea;--paper-2:#ebe5d9;--paper-3:#ddd5c4;
   --ink:#1a1614;--ink-2:#4a423b;--ink-3:#7a7068;
@@ -2148,7 +2148,7 @@ function PrintView() {
   };
   const renderTable=(shiftType,lineIds,pageTitle)=>{
     const grid=buildGrid(shiftType,lineIds);
-    const activeLines=lines.filter(l=>lineIds.includes(l.id));
+    const activeLines=lines.filter(l=>lineIds.includes(l.id) && (!user || user.role !== 'lead' || l.id === user.primary_line));
     const isArvo=shiftType==='arvo';
     const lineSummary=activeLines.map(l=>{const all=(grid[l.id]||[]).flat();return{id:l.id,name:l.name,total:all.length,filled:all.filter(s=>s.workerId).length};});
     const grandTotal=lineSummary.reduce((a,b)=>a+b.total,0);
