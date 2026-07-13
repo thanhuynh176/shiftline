@@ -1912,7 +1912,7 @@ function ShiftModal({shift,mode,users,lines,products,existing,rdoRequests,weekSt
 }
 /* ── Worker Pool (with PIN edit) ── */
 function WorkerPool() {
-  const {user}=useAuth(); const isManager = user && user.role==='manager';
+  const isManager = !!(Store._session && Store._session.role==='manager');
   const [users,setUsers]=useState([]);
   const [lines,setLines]=useState([]);
   const [filter,setFilter]=useState('');
