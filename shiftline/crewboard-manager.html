@@ -2748,6 +2748,71 @@ function SKUTemplatesView() {
       }
     }
 
+  /* ===== Crewboard Name Privacy Layer (client-side only) ===== */
+(function(){
+  const enc = new TextEncoder(), dec = new TextDecoder();
+
+  // Load any names already unlocked this session (survives refresh, wiped on tab close).
+  try {
+    const cached = sessionStorage.getItem('__namekey');
+    window.NAMEKEY = cached ? { map: JSON.parse(cached), loaded: true } : { map:{}, loaded:false };
+  } catch(e){ window.NAMEKEY = { map:{}, loaded:false }; }
+
+  // Wrap sb.from so users/products names get swapped whenever unlocked.
+  const _from = sb.from.bind(sb);
+  sb.from = function(table){
+    const q = _from(table);
+    if (table === 'users' || table === 'products'){
+      const _then = q.then.bind(q);
+      q.then = function(onOk, onErr){
+        return _then(res=>{
+          try{
+            if (window.NAMEKEY.loaded && res && Array.isArray(res.data)){
+              res.data.forEach(row=>{
+                const hit = window.NAMEKEY.map[row.id];
+                if (hit){ row.name = hit.name; if(hit.phone!==undefined) row.phone = hit.phone; }
+              });
+            }
+          }catch(e){}
+          return onOk ? onOk(res) : res;
+        }, onErr);
+      };
+    }
+    return q;
+  };
+
+  async function deriveKey(pw, salt){
+    const base = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveKey']);
+    return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:250000,hash:'SHA-256'},
+      base, {name:'AES-GCM',length:256}, false, ['decrypt']);
+  }
+  async function unlock(file, pw){
+    const buf = new Uint8Array(await file.arrayBuffer());
+    const salt=buf.slice(0,16), iv=buf.slice(16,28), ct=buf.slice(28);
+    const key = await deriveKey(pw, salt);
+    const text = dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv}, key, ct));
+    const map = {};
+    text.split('\n').forEach(l=>{ const p=l.split('=').map(s=>s.trim());
+      if(p[0]) map[p[0]]={name:p[1]||p[0], phone:p[2]||''}; });
+    sessionStorage.setItem('__namekey', JSON.stringify(map));  // memory only; gone on tab close
+    location.reload();   // reload so React re-fetches and shows real names
+  }
+
+  function addBtn(){
+    const b=document.createElement('button');
+    b.textContent = window.NAMEKEY.loaded ? '🔒 Names loaded (click to clear)' : '🔓 Load names';
+    b.style.cssText='position:fixed;top:8px;right:8px;z-index:99999;padding:6px 10px;cursor:pointer;font-size:13px';
+    b.onclick=()=>{
+      if (window.NAMEKEY.loaded){ sessionStorage.removeItem('__namekey'); location.reload(); return; }
+      const i=document.createElement('input'); i.type='file'; i.accept='.enc';
+      i.onchange=async()=>{ const f=i.files[0]; if(!f) return; const pw=prompt('Name-file password:'); if(!pw) return;
+        try{ await unlock(f,pw); }catch(e){ alert('Wrong password or file.'); } };
+      i.click();
+    };
+    document.body.appendChild(b);
+  }
+  (document.readyState!=='loading') ? addBtn() : document.addEventListener('DOMContentLoaded', addBtn);
+})();
     const root=ReactDOM.createRoot(document.getElementById('root'));
     root.render(<ErrorBoundary><AuthProvider><App /></AuthProvider></ErrorBoundary>);
   </script>
