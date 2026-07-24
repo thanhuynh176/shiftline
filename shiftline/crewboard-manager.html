@@ -2759,26 +2759,38 @@ function SKUTemplatesView() {
   } catch(e){ window.NAMEKEY = { map:{}, loaded:false }; }
 
   // Wrap sb.from so users/products names get swapped whenever unlocked.
-  const _from = sb.from.bind(sb);
-  sb.from = function(table){
-    const q = _from(table);
-    if (table === 'users' || table === 'products'){
-      const _then = q.then.bind(q);
-      q.then = function(onOk, onErr){
-        return _then(res=>{
-          try{
-            if (window.NAMEKEY.loaded && res && Array.isArray(res.data)){
-              res.data.forEach(row=>{
-                const hit = window.NAMEKEY.map[row.id];
-                if (hit){ row.name = hit.name; if(hit.phone!==undefined) row.phone = hit.phone; }
-              });
+const _from = sb.from.bind(sb);
+  function _proxify(builder){
+      return new Proxy(builder, {
+            get(target, prop, recv){
+                    const val = Reflect.get(target, prop, recv);
+                    if (prop === 'then' && typeof val === 'function'){
+                              return function(onOk, onErr){
+                                          return val.call(target, res=>{
+                                                        try{
+                                                                        if (window.NAMEKEY && window.NAMEKEY.loaded && res && Array.isArray(res.data)){
+                                                                                          res.data.forEach(row=>{ const hit = window.NAMEKEY.map[row.id]; if(hit){ row.name = hit.name; if(hit.phone!==undefined) row.phone = hit.phone; } });
+                                                                        }
+                                                        }catch(e){}
+                                                        return onOk ? onOk(res) : res;
+                                          }, onErr);
+                              };
+                    }
+                    if (typeof val === 'function'){
+                              return function(...args){
+                                          const r = val.apply(target, args);
+                                          if (r === target || (r && typeof r === 'object' && typeof r.then === 'function')) return _proxify(r);
+                                          return r;
+                              };
+                    }
+                    return val;
             }
-          }catch(e){}
-          return onOk ? onOk(res) : res;
-        }, onErr);
-      };
-    }
-    return q;
+      });
+  }
+  sb.from = function(table){
+      const q = _from(table);
+      if (table === 'users' || table === 'products') return _proxify(q);
+      return q;
   };
 
   async function deriveKey(pw, salt){
