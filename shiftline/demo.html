@@ -571,11 +571,11 @@ function relativeTime(ts) {
 }
 const SHIFT_DEFAULTS = {
   L1:{start:'06:00',end:'15:30'},L2:{start:'05:00',end:'13:30'},L4:{start:'05:00',end:'13:30'},
-  RMI:{start:'07:00',end:'15:30'},KLK:{start:'07:30',end:'16:00'},CLN:{start:'05:30',end:'14:00'},PLT:{start:'05:30',end:'14:00'},
+  A1:{start:'07:00',end:'15:30'},A2:{start:'07:30',end:'16:00'},A3:{start:'05:30',end:'14:00'},A4:{start:'05:30',end:'14:00'},
 };
 const ARVO_DEFAULTS = {
   L1:{start:'15:30',end:'00:00'},L2:{start:'14:00',end:'22:30'},L4:{start:'14:00',end:'22:30'},
-  RMI:{start:'15:30',end:'00:00'},KLK:{start:'16:00',end:'00:30'},CLN:{start:'14:30',end:'23:00'},PLT:{start:'14:30',end:'23:00'},
+  A1:{start:'15:30',end:'00:00'},A2:{start:'16:00',end:'00:30'},A3:{start:'14:30',end:'23:00'},A4:{start:'14:30',end:'23:00'},
 };
 const ROLES = [
   'Leading Hand','Leading Hand PO','Leading Hand HC','Batching','Mixing Op','Bowl Chopper Op','Tumbler',
@@ -589,12 +589,12 @@ const SEED_LINES = [
   {id:'L1',name:'Line 1',description:'Pack Line A',color:'#dc4a2a'},
   {id:'L2',name:'Line 2',description:'Pack Line B',color:'#0d4f3c'},
   {id:'L4',name:'Line 4',description:'Assembly',color:'#b8860b'},
-  {id:'RMI',name:'RMI',description:'Finishing',color:'#4a423b'},
-  {id:'KLK',name:'Kliklok',description:'Chilled Pack',color:'#7a3b8c'},
-  {id:'CLN',name:'Cleaning',description:'Frozen Pack',color:'#0a6b8c'},
-  {id:'PLT',name:'Pallet Mover',description:'Rework',color:'#5c4a3a'},
+  {id:'A1',name:'Area A',description:'Finishing',color:'#4a423b'},
+  {id:'A2',name:'Area B',description:'Chilled Pack',color:'#7a3b8c'},
+  {id:'A3',name:'Area C',description:'Frozen Pack',color:'#0a6b8c'},
+  {id:'A4',name:'Area D',description:'Rework',color:'#5c4a3a'},
 ];
-const LINE_DISPLAY_ORDER = ['L1','L2','L4','RMI','KLK','PLT','CLN'];
+const LINE_DISPLAY_ORDER = ['L1','L2','L4','A1','A2','A4','A3'];
 function sortLinesForDisplay(arr){
   const ord = LINE_DISPLAY_ORDER;
   return [...(arr||[])].sort((a,b)=>{
@@ -646,10 +646,10 @@ const SEED_PRODUCTS = [
   {id:'P19', name:'Demo Item 36', lineId:'L4'},
   {id:'P43', name:'Demo Item 37', lineId:'L4'},
   {id:'P12', name:'Demo Item 38', lineId:'L4'},
-  {id:'PRMI', name:'Demo Item 39', lineId:'RMI'},
-  {id:'PKLK', name:'Demo Item 40', lineId:'KLK'},
-  {id:'PCLN', name:'Demo Item 41', lineId:'CLN'},
-  {id:'PPLT', name:'Demo Item 42', lineId:'PLT'},
+  {id:'PA1', name:'Demo Item 39', lineId:'A1'},
+  {id:'PA2', name:'Demo Item 40', lineId:'A2'},
+  {id:'PA3', name:'Demo Item 41', lineId:'A3'},
+  {id:'PA4', name:'Demo Item 42', lineId:'A4'},
 ];
 const SEED_WORKERS = [
   {id:'W001',pin:'0000',name:'Alex Ellis',skills:['Leading Hand','Batching'],primaryLine:'L1'},
@@ -720,51 +720,51 @@ const SEED_WORKERS = [
   {id:'W077',pin:'0000',name:'Blake Turner',skills:['CPS Op'],primaryLine:'L4'},
   {id:'W078',pin:'0000',name:'Charlie Doyle',skills:['Relief Inspector'],primaryLine:'L4'},
   {id:'W079',pin:'0000',name:'Dana Kemp',skills:['Relief Inspector'],primaryLine:'L4'},
-  {id:'W090',pin:'0000',name:'Elliot Sloan',skills:['Carton Former'],primaryLine:'KLK'},
-  {id:'W091',pin:'0000',name:'Frankie Hayes',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W092',pin:'0000',name:'Gray Osborne',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W093',pin:'0000',name:'Indigo Whitfield',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W094',pin:'0000',name:'Jules Foster',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W095',pin:'0000',name:'Kit Monroe',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W096',pin:'0000',name:'Lane Carter',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W097',pin:'0000',name:'Micah Jensen',skills:['Palletizer'],primaryLine:'KLK'},
-  {id:'W098',pin:'0000',name:'Noel Quinlan',skills:['Palletizer'],primaryLine:'KLK'},
-  {id:'W099',pin:'0000',name:'Oakley Ashby',skills:['Palletizer'],primaryLine:'KLK'},
-  {id:'W110',pin:'0000',name:'Perry Hale',skills:['Leading Hand'],primaryLine:'RMI'},
-  {id:'W111',pin:'0000',name:'Robin Ogden',skills:['QC'],primaryLine:'RMI'},
-  {id:'W112',pin:'0000',name:'Alex Ellis',skills:['Pallet Jack'],primaryLine:'RMI'},
-  {id:'W113',pin:'0000',name:'Sam Lawson',skills:['Verification'],primaryLine:'RMI'},
-  {id:'W114',pin:'0000',name:'Jordan Sutton',skills:['Skin Inspector Verification'],primaryLine:'RMI'},
-  {id:'W115',pin:'0000',name:'Riley Chandler',skills:['Scanning/Labels'],primaryLine:'RMI'},
-  {id:'W116',pin:'0000',name:'Casey Joyce',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W117',pin:'0000',name:'Morgan Reeve',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W118',pin:'0000',name:'Taylor Gibson',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W119',pin:'0000',name:'Jamie Nolan',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W120',pin:'0000',name:'Avery Vance',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W121',pin:'0000',name:'Quinn Everett',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W122',pin:'0000',name:'Drew Lyons',skills:['Loader'],primaryLine:'RMI'},
-  {id:'W123',pin:'0000',name:'Harper Bennett',skills:['Loader'],primaryLine:'RMI'},
-  {id:'W124',pin:'0000',name:'Rowan Ingram',skills:['Loader'],primaryLine:'RMI'},
-  {id:'W125',pin:'0000',name:'Skyler Porter',skills:['Loader/Skin'],primaryLine:'RMI'},
-  {id:'W140',pin:'0000',name:'Emerson Yates',skills:['Cleaning'],primaryLine:'CLN'},
-  {id:'W141',pin:'0000',name:'Finley Grant',skills:['Cleaning'],primaryLine:'CLN'},
-  {id:'W142',pin:'0000',name:'Hayden Newell',skills:['Cleaning'],primaryLine:'CLN'},
-  {id:'W150',pin:'1234',name:'Demo Manager 1',skills:['Pallet Mover Production'],primaryLine:'PLT'},
-  {id:'W151',pin:'1234',name:'Demo Manager 2',skills:['Pallet Mover Pack out'],primaryLine:'PLT'},
+  {id:'W090',pin:'0000',name:'Elliot Sloan',skills:['Carton Former'],primaryLine:'A2'},
+  {id:'W091',pin:'0000',name:'Frankie Hayes',skills:['Carton Packer'],primaryLine:'A2'},
+  {id:'W092',pin:'0000',name:'Gray Osborne',skills:['Carton Packer'],primaryLine:'A2'},
+  {id:'W093',pin:'0000',name:'Indigo Whitfield',skills:['Carton Packer'],primaryLine:'A2'},
+  {id:'W094',pin:'0000',name:'Jules Foster',skills:['Carton Packer'],primaryLine:'A2'},
+  {id:'W095',pin:'0000',name:'Kit Monroe',skills:['Carton Packer'],primaryLine:'A2'},
+  {id:'W096',pin:'0000',name:'Lane Carter',skills:['Carton Packer'],primaryLine:'A2'},
+  {id:'W097',pin:'0000',name:'Micah Jensen',skills:['Palletizer'],primaryLine:'A2'},
+  {id:'W098',pin:'0000',name:'Noel Quinlan',skills:['Palletizer'],primaryLine:'A2'},
+  {id:'W099',pin:'0000',name:'Oakley Ashby',skills:['Palletizer'],primaryLine:'A2'},
+  {id:'W110',pin:'0000',name:'Perry Hale',skills:['Leading Hand'],primaryLine:'A1'},
+  {id:'W111',pin:'0000',name:'Robin Ogden',skills:['QC'],primaryLine:'A1'},
+  {id:'W112',pin:'0000',name:'Alex Ellis',skills:['Pallet Jack'],primaryLine:'A1'},
+  {id:'W113',pin:'0000',name:'Sam Lawson',skills:['Verification'],primaryLine:'A1'},
+  {id:'W114',pin:'0000',name:'Jordan Sutton',skills:['Skin Inspector Verification'],primaryLine:'A1'},
+  {id:'W115',pin:'0000',name:'Riley Chandler',skills:['Scanning/Labels'],primaryLine:'A1'},
+  {id:'W116',pin:'0000',name:'Casey Joyce',skills:['Inspector'],primaryLine:'A1'},
+  {id:'W117',pin:'0000',name:'Morgan Reeve',skills:['Inspector'],primaryLine:'A1'},
+  {id:'W118',pin:'0000',name:'Taylor Gibson',skills:['Inspector'],primaryLine:'A1'},
+  {id:'W119',pin:'0000',name:'Jamie Nolan',skills:['Inspector'],primaryLine:'A1'},
+  {id:'W120',pin:'0000',name:'Avery Vance',skills:['Inspector'],primaryLine:'A1'},
+  {id:'W121',pin:'0000',name:'Quinn Everett',skills:['Inspector'],primaryLine:'A1'},
+  {id:'W122',pin:'0000',name:'Drew Lyons',skills:['Loader'],primaryLine:'A1'},
+  {id:'W123',pin:'0000',name:'Harper Bennett',skills:['Loader'],primaryLine:'A1'},
+  {id:'W124',pin:'0000',name:'Rowan Ingram',skills:['Loader'],primaryLine:'A1'},
+  {id:'W125',pin:'0000',name:'Skyler Porter',skills:['Loader/Skin'],primaryLine:'A1'},
+  {id:'W140',pin:'0000',name:'Emerson Yates',skills:['Cleaning'],primaryLine:'A3'},
+  {id:'W141',pin:'0000',name:'Finley Grant',skills:['Cleaning'],primaryLine:'A3'},
+  {id:'W142',pin:'0000',name:'Hayden Newell',skills:['Cleaning'],primaryLine:'A3'},
+  {id:'W150',pin:'1234',name:'Demo Manager 1',skills:['Pallet Mover Production'],primaryLine:'A4'},
+  {id:'W151',pin:'1234',name:'Demo Manager 2',skills:['Pallet Mover Pack out'],primaryLine:'A4'},
 ];
 const SEED_MANAGERS = [
-  {id:'M001',pin:'0000',name:'Milco',area:'Line 1 / RMI',role:'manager'},
-  {id:'M002',pin:'0000',name:'Ali',area:'Line 2 / Line 4',role:'manager'},
-  {id:'ADMIN',pin:'0000',name:'Admin',area:'All Lines',role:'manager'},
+  {id:'M001',pin:'0000',name:'Demo Manager 1',area:'Line 1 / Area A',role:'manager'},
+  {id:'M002',pin:'0000',name:'Demo Manager 2',area:'Line 2 / Line 4',role:'manager'},
+  {id:'ADMIN',pin:'0000',name:'Demo Admin',area:'All Lines',role:'manager'},
 ];
 const SHIFT_TEMPLATES = {
   L1:[{role:'Leading Hand',count:1},{role:'Batching',count:2},{role:'Mixing Op',count:4},{role:'Forming Op',count:2},{role:'Carton Packer',count:6},{role:'Carton Weighing',count:2},{role:'Robot Op',count:1},{role:'QC',count:1},{role:'Relief Packer',count:3}],
   L2:[{role:'Leading Hand',count:1},{role:'Mixing Op',count:1},{role:'Batching',count:2},{role:'Forming Op',count:1},{role:'Line Op',count:2},{role:'Forming Inspector',count:1},{role:'Fryer Inspector',count:1},{role:'QC',count:1},{role:'Leading Hand PO',count:1},{role:'Bagging Op',count:1},{role:'Carton Former',count:1},{role:'Carton Packer',count:3},{role:'Spiral Inspector',count:1},{role:'Palletizer',count:1},{role:'Relief Packer',count:2}],
   L4:[{role:'Leading Hand',count:1},{role:'Bowl Chopper Op',count:1},{role:'Mixing Op',count:1},{role:'Batching',count:1},{role:'Forming Op',count:1},{role:'Line Op',count:2},{role:'Forming Inspector',count:1},{role:'Fryer Inspector',count:1},{role:'QC',count:1},{role:'Leading Hand HC',count:1},{role:'Bagging Op',count:1},{role:'Inspector',count:4},{role:'CPS Op',count:1},{role:'Relief Inspector',count:2}],
-  RMI:[{role:'Leading Hand',count:1},{role:'QC',count:1},{role:'Pallet Jack',count:1},{role:'Verification',count:1},{role:'Skin Inspector Verification',count:1},{role:'Scanning/Labels',count:1},{role:'Inspector',count:6},{role:'Loader',count:3},{role:'Loader/Skin',count:1}],
-  KLK:[{role:'Carton Former',count:1},{role:'Carton Packer',count:6},{role:'Palletizer',count:3}],
-  CLN:[{role:'Cleaning',count:3}],
-  PLT:[{role:'Pallet Mover Production',count:1},{role:'Pallet Mover Pack out',count:1}],
+  A1:[{role:'Leading Hand',count:1},{role:'QC',count:1},{role:'Pallet Jack',count:1},{role:'Verification',count:1},{role:'Skin Inspector Verification',count:1},{role:'Scanning/Labels',count:1},{role:'Inspector',count:6},{role:'Loader',count:3},{role:'Loader/Skin',count:1}],
+  A2:[{role:'Carton Former',count:1},{role:'Carton Packer',count:6},{role:'Palletizer',count:3}],
+  A3:[{role:'Cleaning',count:3}],
+  A4:[{role:'Pallet Mover Production',count:1},{role:'Pallet Mover Pack out',count:1}],
 };
 const SKU_POSITION_TEMPLATES = {
   P02: { positions: [ 
@@ -1304,12 +1304,12 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Extra Inspector', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  PKLK: { positions: [ 
+  PA2: { positions: [ 
     {role:'Carton Former', count:1},
     {role:'Carton Packer', count:6},
     {role:'Palletizer', count:3},
   ]},
-  PRMI: { positions: [ 
+  PA1: { positions: [ 
     {role:'Leading Hand', count:1},
     {role:'QC', count:1},
     {role:'Pallet Jack', count:1},
@@ -1324,7 +1324,7 @@ const SKU_POSITION_TEMPLATES = {
 async function seedIfEmpty() { return; }
 function buildSampleRoster(weekStart, status='draft') {
   const shifts=[];
-  const productByLineByDay={L1:['P01','P03','P02','P05','P01'],L2:['P10','P10','P10','P12','P10'],L4:['P14','P15','P16','P17','P14'],RMI:['PRMI','PRMI','PRMI','PRMI','PRMI'],KLK:['PKLK','PKLK','PKLK','PKLK','PKLK'],CLN:['PCLN','PCLN','PCLN','PCLN','PCLN'],PLT:['PPLT','PPLT','PPLT','PPLT','PPLT']};
+  const productByLineByDay={L1:['P01','P03','P02','P05','P01'],L2:['P10','P10','P10','P12','P10'],L4:['P14','P15','P16','P17','P14'],A1:['PA1','PA1','PA1','PA1','PA1'],A2:['PA2','PA2','PA2','PA2','PA2'],A3:['PA3','PA3','PA3','PA3','PA3'],A4:['PA4','PA4','PA4','PA4','PA4']};
   const workersByLine={};
   SEED_WORKERS.forEach(w=>{if(!workersByLine[w.primaryLine])workersByLine[w.primaryLine]=[];workersByLine[w.primaryLine].push(w);});
   for(let dayIdx=0;dayIdx<5;dayIdx++){
@@ -2227,7 +2227,7 @@ function PrintView() {
   const weekDays=[0,1,2,3,4].map(i=>addDays(weekStart,i));
   const productName=id=>products.find(p=>p.id===id)?.name||'';
   const PROD_LINES=['L1','L2','L4'];
-  const SUPP_LINES=['RMI','KLK','CLN','PLT'];
+  const SUPP_LINES=['A1','A2','A3','A4'];
   const buildGrid=(shiftType,lineIds)=>{
     const grid={};
     lineIds.forEach(id=>{grid[id]=[[],[],[],[],[]];});
