@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crewboard — Turosi Food Solutions</title>
+<title>Crewboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
-<style>h
+<style>
 :root{
   --paper:#f5f1ea;--paper-2:#ebe5d9;--paper-3:#ddd5c4;
   --ink:#1a1614;--ink-2:#4a423b;--ink-3:#7a7068;
@@ -325,7 +325,7 @@ input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
 <div id="root">
   <div id="__bootstrap__" style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Sans',sans-serif">
     <div style="text-align:center;max-width:420px;padding:30px">
-      <img src="data:image/png;base64,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" style="height:40px;margin-bottom:16px" alt="Turosi">
+      <img src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22150%22%20viewBox%3D%220%200%20300%20150%22%3E%3Crect%20width%3D%22300%22%20height%3D%22150%22%20rx%3D%2214%22%20fill%3D%22%23e6e1d8%22%20stroke%3D%22%23c9c1b4%22%20stroke-width%3D%222%22%2F%3E%3Ctext%20x%3D%22150%22%20y%3D%2284%22%20font-family%3D%22monospace%22%20font-size%3D%2230%22%20letter-spacing%3D%223%22%20fill%3D%22%236a6257%22%20text-anchor%3D%22middle%22%3ECREWBOARD%3C%2Ftext%3E%3C%2Fsvg%3E" style="height:40px;margin-bottom:16px" alt="Crewboard">
       <div style="font-family:'Instrument Serif',serif;font-size:36px;color:#1a1614">Crewboard</div>
       <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7a7068;text-transform:uppercase;letter-spacing:.15em;margin-top:8px">Loading…</div>
       <div id="__bootstrap_msg__" style="margin-top:20px;font-size:12px;color:#7a7068"></div>
@@ -362,7 +362,7 @@ const SUPABASE_URL  = 'https://zqatducmyobthysrzvol.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpxYXRkdWNteW9idGh5c3J6dm9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NjQxMTIsImV4cCI6MjA5NDI0MDExMn0.WOnObAFFPch1owaq4bZ1TTOwGIpS8aiICm9NmDS7NNc';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-const LOGO_URI = "data:image/png;base64,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";
+const LOGO_URI = "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22300%22%20height%3D%22150%22%20viewBox%3D%220%200%20300%20150%22%3E%3Crect%20width%3D%22300%22%20height%3D%22150%22%20rx%3D%2214%22%20fill%3D%22%23e6e1d8%22%20stroke%3D%22%23c9c1b4%22%20stroke-width%3D%222%22%2F%3E%3Ctext%20x%3D%22150%22%20y%3D%2284%22%20font-family%3D%22monospace%22%20font-size%3D%2230%22%20letter-spacing%3D%223%22%20fill%3D%22%236a6257%22%20text-anchor%3D%22middle%22%3ECREWBOARD%3C%2Ftext%3E%3C%2Fsvg%3E";
 /* ── Store ── */
 const Store = {
   _session: null,
@@ -500,13 +500,13 @@ const ROLES = [
   'Pallet Jack','Loader','Loader/Skin','Pallet Mover Production','Pallet Mover Pack out','Cleaning'
 ];
 const SEED_LINES = [
-  {id:'L1',name:'Line 1',description:'Beef patty production',color:'#dc4a2a'},
-  {id:'L2',name:'Line 2',description:'Chicken / poultry',color:'#0d4f3c'},
-  {id:'L4',name:'Line 4',description:'Mixed nugget & tender',color:'#b8860b'},
-  {id:'RMI',name:'RMI',description:'Receiving & materials',color:'#4a423b'},
-  {id:'KLK',name:'Kliklok',description:'Cartoning & palletising',color:'#7a3b8c'},
-  {id:'CLN',name:'Cleaning',description:'Sanitation crew',color:'#0a6b8c'},
-  {id:'PLT',name:'Pallet Mover',description:'Pallet movement & yard',color:'#5c4a3a'},
+  {id:'L1',name:'Line 1',description:'Production area',color:'#dc4a2a'},
+  {id:'L2',name:'Line 2',description:'Production area',color:'#0d4f3c'},
+  {id:'L4',name:'Line 4',description:'Production area',color:'#b8860b'},
+  {id:'RMI',name:'Area A',description:'Production area',color:'#4a423b'},
+  {id:'KLK',name:'Area B',description:'Production area',color:'#7a3b8c'},
+  {id:'CLN',name:'Area C',description:'Production area',color:'#0a6b8c'},
+  {id:'PLT',name:'Area D',description:'Production area',color:'#5c4a3a'},
 ];
 const LINE_DISPLAY_ORDER = ['L1','L2','L4','RMI','KLK','PLT','CLN'];
 function sortLinesForDisplay(arr){
@@ -520,156 +520,156 @@ function sortLinesForDisplay(arr){
 }
 const SEED_PRODUCTS = [
   // LINE 1
-  {id:'P02', name:'JAPAN 10:1 BEEF PATTIES', lineId:'L1'},
-  {id:'P03', name:'4:1 LOCAL BEEF PATTIES', lineId:'L1'},
-  {id:'P04', name:'B:S PATTIES NEW', lineId:'L1'},
-  {id:'P05', name:'3:1 BEEF PATTIES ANGUS OPTIMIS', lineId:'L1'},
-  {id:'P01', name:'10:1 LOCAL BEEF PATTIES', lineId:'L1'},
+  {id:'P02', name:'Product 02', lineId:'L1'},
+  {id:'P03', name:'Product 03', lineId:'L1'},
+  {id:'P04', name:'Product 04', lineId:'L1'},
+  {id:'P05', name:'Product 05', lineId:'L1'},
+  {id:'P01', name:'Product 01', lineId:'L1'},
   // LINE 2
-  {id:'P10', name:'KFC CHK NUGGETS 14.4KG', lineId:'L2'},
-  {id:'P21', name:'COLES TEMPURA NUGGET 400GX4', lineId:'L2'},
-  {id:'P22', name:'WW ESSENTIAL NUGGETS B', lineId:'L2'},
-  {id:'P14', name:'B&G CHK NUGGETS 12 X 500G', lineId:'L2'},
-  {id:'P15', name:'COLES PLAIN CHK TENDERS 6 x 1KG', lineId:'L2'},
-  {id:'P23', name:'RED ROOSTER SPICED CARAMEL BALL 12KG', lineId:'L2'},
-  {id:'P24', name:'COLES CHK TENDERS 4 x 400G K RSPCA', lineId:'L2'},
-  {id:'P16', name:'COLES CHK KIEV BALLS 720GX3', lineId:'L2'},
-  {id:'P25', name:'GC GARLIC CHICKEN BALLS 5X1 KG', lineId:'L2'},
-  {id:'P26', name:'COLES MINI CHICKEN KIEV 320GX4', lineId:'L2'},
-  {id:'P17', name:'WW GARLIC CHK BITES 6X360G KK', lineId:'L2'},
-  {id:'P27', name:'CHIKO GARLIC CHICKEN BALLS 40G', lineId:'L2'},
-  {id:'P28', name:'CHIKO CHICKEN SCHNITZEL 23 X 125G', lineId:'L2'},
-  {id:'P29', name:'CHIKO CHICKEN KIEV 40 X 120G', lineId:'L2'},
-  {id:'P30', name:'MCD CHEESE STICKS', lineId:'L2'},
-  {id:'P31', name:'MCD CHEESE PATTY', lineId:'L2'},
-  {id:'P32', name:'KFC FRIED COOKIE DOUGH', lineId:'L2'},
-  {id:'P33', name:'WW MOZZARELLA STICK 300G', lineId:'L2'},
-  {id:'P34', name:'ASSM MOZZARELLA DIPPERS', lineId:'L2'},
-  {id:'P20', name:'FALAFEL 5 X 1KG', lineId:'L2'},
+  {id:'P10', name:'Product 06', lineId:'L2'},
+  {id:'P21', name:'Product 15', lineId:'L2'},
+  {id:'P22', name:'Product 16', lineId:'L2'},
+  {id:'P14', name:'Product 09', lineId:'L2'},
+  {id:'P15', name:'Product 10', lineId:'L2'},
+  {id:'P23', name:'Product 17', lineId:'L2'},
+  {id:'P24', name:'Product 18', lineId:'L2'},
+  {id:'P16', name:'Product 11', lineId:'L2'},
+  {id:'P25', name:'Product 19', lineId:'L2'},
+  {id:'P26', name:'Product 20', lineId:'L2'},
+  {id:'P17', name:'Product 12', lineId:'L2'},
+  {id:'P27', name:'Product 21', lineId:'L2'},
+  {id:'P28', name:'Product 22', lineId:'L2'},
+  {id:'P29', name:'Product 23', lineId:'L2'},
+  {id:'P30', name:'Product 24', lineId:'L2'},
+  {id:'P31', name:'Product 25', lineId:'L2'},
+  {id:'P32', name:'Product 26', lineId:'L2'},
+  {id:'P33', name:'Product 27', lineId:'L2'},
+  {id:'P34', name:'Product 28', lineId:'L2'},
+  {id:'P20', name:'Product 14', lineId:'L2'},
   // LINE 4
-  {id:'P11', name:'MCDONALDS NUGGET', lineId:'L4'},
-  {id:'P35', name:'WW CHK NUGGETS CRUMB 8X400G', lineId:'L4'},
-  {id:'P36', name:'WW CHK NUGGETS TEMPURA 8X400G', lineId:'L4'},
-  {id:'P37', name:'GC CHICKEN TEMPURA NUGG 5X1 KG', lineId:'L4'},
-  {id:'P38', name:'WW PLAIN CHK TENDERS WIP', lineId:'L4'},
-  {id:'P39', name:'CHK KIEV 175G', lineId:'L4'},
-  {id:'P40', name:'CHIKO BEEF MEATBALL 5 X 1KG', lineId:'L4'},
-  {id:'P41', name:'JEFFERSON MEAT BALLS 5 X 1KG', lineId:'L4'},
-  {id:'P42', name:'GC BEEF MEATBALL 5X1 KG', lineId:'L4'},
-  {id:'P18', name:'SUBWAY MEATBALLS - 8 X 1.5KG', lineId:'L4'},
-  {id:'P19', name:'LW MINI POTATO CAKES ORIGINAL BAG 12 X 500G', lineId:'L4'},
-  {id:'P43', name:'MC WINGS', lineId:'L4'},
-  {id:'P12', name:'MC CRISPY', lineId:'L4'},
-  {id:'PRMI', name:'RMI / Goods Receiving', lineId:'RMI'},
-  {id:'PKLK', name:'Kliklok Cartoning', lineId:'KLK'},
-  {id:'PCLN', name:'Daily Sanitation', lineId:'CLN'},
-  {id:'PPLT', name:'Yard Movement', lineId:'PLT'},
+  {id:'P11', name:'Product 07', lineId:'L4'},
+  {id:'P35', name:'Product 29', lineId:'L4'},
+  {id:'P36', name:'Product 30', lineId:'L4'},
+  {id:'P37', name:'Product 31', lineId:'L4'},
+  {id:'P38', name:'Product 32', lineId:'L4'},
+  {id:'P39', name:'Product 33', lineId:'L4'},
+  {id:'P40', name:'Product 34', lineId:'L4'},
+  {id:'P41', name:'Product 35', lineId:'L4'},
+  {id:'P42', name:'Product 36', lineId:'L4'},
+  {id:'P18', name:'Product 13', lineId:'L4'},
+  {id:'P19', name:'Product 36', lineId:'L4'},
+  {id:'P43', name:'Product 37', lineId:'L4'},
+  {id:'P12', name:'Product 08', lineId:'L4'},
+  {id:'PRMI', name:'Product 43', lineId:'RMI'},
+  {id:'PKLK', name:'Product 40', lineId:'KLK'},
+  {id:'PCLN', name:'Product 39', lineId:'CLN'},
+  {id:'PPLT', name:'Product 42', lineId:'PLT'},
 ];
 const SEED_WORKERS = [
-  {id:'W001',pin:'1234',name:'Sudhir Soni',skills:['Leading Hand','Batching'],primaryLine:'L1'},
-  {id:'W002',pin:'1234',name:'Yaser Elyas',skills:['Batching','Mixing Op'],primaryLine:'L1'},
-  {id:'W003',pin:'1234',name:'Anil',skills:['Batching','Mixing Op'],primaryLine:'L1'},
-  {id:'W004',pin:'1234',name:'Brannon Johnson',skills:['Mixing Op','Forming Op'],primaryLine:'L1'},
-  {id:'W005',pin:'1234',name:'Krishna Gurung',skills:['Mixing Op'],primaryLine:'L1'},
-  {id:'W006',pin:'1234',name:'Amandeep Singh',skills:['Mixing Op','Batching'],primaryLine:'L1'},
-  {id:'W007',pin:'1234',name:'Sandip Archary',skills:['Mixing Op'],primaryLine:'L1'},
-  {id:'W008',pin:'1234',name:'Truong Son Do',skills:['Forming Op','Line Op'],primaryLine:'L1'},
-  {id:'W009',pin:'1234',name:'Rasheed Idowu Busari',skills:['Forming Op'],primaryLine:'L1'},
-  {id:'W010',pin:'1234',name:'Hieu Ngo',skills:['Carton Packer'],primaryLine:'L1'},
-  {id:'W011',pin:'1234',name:'Sarisa Chantha',skills:['Carton Packer','Carton Weighing'],primaryLine:'L1'},
-  {id:'W012',pin:'1234',name:'Fo In Tchung',skills:['Carton Packer'],primaryLine:'L1'},
-  {id:'W013',pin:'1234',name:'Harprit Kaur Brar',skills:['Carton Packer'],primaryLine:'L1'},
-  {id:'W014',pin:'1234',name:'Harpreet Kaur Brar',skills:['Carton Packer'],primaryLine:'L1'},
-  {id:'W015',pin:'1234',name:'Hong Nguyen',skills:['Carton Packer'],primaryLine:'L1'},
-  {id:'W016',pin:'1234',name:'Trang Nguyen',skills:['Carton Weighing','Carton Packer'],primaryLine:'L1'},
-  {id:'W017',pin:'1234',name:'Seema',skills:['Carton Weighing'],primaryLine:'L1'},
-  {id:'W018',pin:'1234',name:'Swaraj',skills:['Robot Op','Palletizer'],primaryLine:'L1'},
-  {id:'W019',pin:'1234',name:'Leshan',skills:['QC','Inspector'],primaryLine:'L1'},
-  {id:'W020',pin:'1234',name:'Kulwinder',skills:['Carton Packer','Liners'],primaryLine:'L1'},
-  {id:'W021',pin:'1234',name:'Teresa',skills:['Carton Packer','Liners'],primaryLine:'L1'},
-  {id:'W022',pin:'1234',name:'Leonida',skills:['Carton Packer','Liners'],primaryLine:'L1'},
-  {id:'W023',pin:'1234',name:'Zahra Mohseni',skills:['Relief Packer'],primaryLine:'L1'},
-  {id:'W024',pin:'1234',name:'Amarjit Kaur',skills:['Relief Packer'],primaryLine:'L1'},
-  {id:'W025',pin:'1234',name:'Sa Ah Fook',skills:['Relief Packer'],primaryLine:'L1'},
-  {id:'W030',pin:'1234',name:'George',skills:['Leading Hand'],primaryLine:'L2'},
-  {id:'W031',pin:'1234',name:'Anaru',skills:['Mixing Op','Forming Op'],primaryLine:'L2'},
-  {id:'W032',pin:'1234',name:'Gede',skills:['Batching','Mixing Op'],primaryLine:'L2'},
-  {id:'W033',pin:'1234',name:'Manjinder',skills:['Batching'],primaryLine:'L2'},
-  {id:'W034',pin:'1234',name:'Sandeep',skills:['Forming Op','Line Op'],primaryLine:'L2'},
-  {id:'W035',pin:'1234',name:'Cosimo',skills:['Line Op'],primaryLine:'L2'},
-  {id:'W036',pin:'1234',name:'Eric',skills:['Line Op','Forming Op'],primaryLine:'L2'},
-  {id:'W037',pin:'1234',name:'Rosemarie Pancho',skills:['Forming Inspector','Inspector'],primaryLine:'L2'},
-  {id:'W038',pin:'1234',name:'Dao Mai',skills:['Fryer Inspector','Inspector'],primaryLine:'L2'},
-  {id:'W039',pin:'1234',name:'Nadeea',skills:['QC','Inspector'],primaryLine:'L2'},
-  {id:'W040',pin:'1234',name:'Chau',skills:['Leading Hand PO'],primaryLine:'L2'},
-  {id:'W041',pin:'1234',name:'Novelyn',skills:['Bagging Op'],primaryLine:'L2'},
-  {id:'W042',pin:'1234',name:'Requel',skills:['Carton Former','Carton Packer'],primaryLine:'L2'},
-  {id:'W043',pin:'1234',name:'Thi Minh Trang',skills:['Carton Packer'],primaryLine:'L2'},
-  {id:'W044',pin:'1234',name:'Arisha',skills:['Carton Packer'],primaryLine:'L2'},
-  {id:'W045',pin:'1234',name:'Ivy',skills:['Carton Packer'],primaryLine:'L2'},
-  {id:'W046',pin:'1234',name:'Taliilagi Solaese',skills:['Spiral Inspector','Inspector'],primaryLine:'L2'},
-  {id:'W047',pin:'1234',name:'Edward Kennedy',skills:['Palletizer'],primaryLine:'L2'},
-  {id:'W048',pin:'1234',name:'Kelly',skills:['QC'],primaryLine:'L2'},
-  {id:'W049',pin:'1234',name:'Shirin',skills:['Carton Packer','Inspector'],primaryLine:'L2'},
-  {id:'W050',pin:'1234',name:'Wayne Cohen',skills:['Inspector','Carton Packer'],primaryLine:'L2'},
-  {id:'W051',pin:'1234',name:'Jou Yu',skills:['Relief Packer'],primaryLine:'L2'},
-  {id:'W052',pin:'1234',name:'Simarjeet Kaur',skills:['Relief Packer'],primaryLine:'L2'},
-  {id:'W060',pin:'1234',name:'Edmun',skills:['Leading Hand'],primaryLine:'L4'},
-  {id:'W061',pin:'1234',name:'Phung Nguyen',skills:['Bowl Chopper Op','Mixing Op'],primaryLine:'L4'},
-  {id:'W062',pin:'1234',name:'Thang',skills:['Mixing Op','Batching'],primaryLine:'L4'},
-  {id:'W063',pin:'1234',name:'Joby',skills:['Batching'],primaryLine:'L4'},
-  {id:'W064',pin:'1234',name:'Ketut',skills:['Forming Op'],primaryLine:'L4'},
-  {id:'W065',pin:'1234',name:'Jaspreet',skills:['Line Op'],primaryLine:'L4'},
-  {id:'W066',pin:'1234',name:'Huy Nguyen',skills:['Line Op'],primaryLine:'L4'},
-  {id:'W067',pin:'1234',name:'Min Lay',skills:['Forming Inspector'],primaryLine:'L4'},
-  {id:'W068',pin:'1234',name:'Rosamary Chambugong',skills:['Fryer Inspector','Inspector'],primaryLine:'L4'},
-  {id:'W069',pin:'1234',name:'Fang',skills:['QC','Inspector'],primaryLine:'L4'},
-  {id:'W070',pin:'1234',name:'Dian',skills:['Leading Hand HC'],primaryLine:'L4'},
-  {id:'W071',pin:'1234',name:'Puka Nida',skills:['Bagging Op'],primaryLine:'L4'},
-  {id:'W072',pin:'1234',name:'Touch Yen',skills:['Inspector'],primaryLine:'L4'},
-  {id:'W073',pin:'1234',name:'Lin',skills:['Inspector'],primaryLine:'L4'},
-  {id:'W074',pin:'1234',name:'Kelwin',skills:['Inspector'],primaryLine:'L4'},
-  {id:'W075',pin:'1234',name:'Jarayin Abing',skills:['Inspector'],primaryLine:'L4'},
-  {id:'W076',pin:'1234',name:'Thi Doan',skills:['QC'],primaryLine:'L4'},
-  {id:'W077',pin:'1234',name:'Dat Hoang',skills:['CPS Op'],primaryLine:'L4'},
-  {id:'W078',pin:'1234',name:'Anacita Azarcon',skills:['Relief Inspector'],primaryLine:'L4'},
-  {id:'W079',pin:'1234',name:'Sonia Gomari',skills:['Relief Inspector'],primaryLine:'L4'},
-  {id:'W090',pin:'1234',name:'Meenambigai Maran',skills:['Carton Former'],primaryLine:'KLK'},
-  {id:'W091',pin:'1234',name:'Andi Annisa',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W092',pin:'1234',name:'Annisa Callystha',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W093',pin:'1234',name:'Shallu Anand',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W094',pin:'1234',name:'Irma Jap',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W095',pin:'1234',name:'Fern Knight',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W096',pin:'1234',name:'Jamie Ng',skills:['Carton Packer'],primaryLine:'KLK'},
-  {id:'W097',pin:'1234',name:'Richard Mogno',skills:['Palletizer'],primaryLine:'KLK'},
-  {id:'W098',pin:'1234',name:'Elio Sarmento',skills:['Palletizer'],primaryLine:'KLK'},
-  {id:'W099',pin:'1234',name:'Charlie Hamilton',skills:['Palletizer'],primaryLine:'KLK'},
-  {id:'W110',pin:'1234',name:'Munaf',skills:['Leading Hand'],primaryLine:'RMI'},
-  {id:'W111',pin:'1234',name:'Zheng Guo',skills:['QC'],primaryLine:'RMI'},
-  {id:'W112',pin:'1234',name:'Rosemarie Manula',skills:['Pallet Jack'],primaryLine:'RMI'},
-  {id:'W113',pin:'1234',name:'Ferdane',skills:['Verification'],primaryLine:'RMI'},
-  {id:'W114',pin:'1234',name:'Frank',skills:['Skin Inspector Verification'],primaryLine:'RMI'},
-  {id:'W115',pin:'1234',name:'Soty Pheng',skills:['Scanning/Labels'],primaryLine:'RMI'},
-  {id:'W116',pin:'1234',name:'Bele',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W117',pin:'1234',name:'Thi Kim Tuyen',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W118',pin:'1234',name:'Ronald',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W119',pin:'1234',name:'Lan Phan',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W120',pin:'1234',name:'Bob',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W121',pin:'1234',name:'Nur Haryanto',skills:['Inspector'],primaryLine:'RMI'},
-  {id:'W122',pin:'1234',name:'Jacqueline Piungul',skills:['Loader'],primaryLine:'RMI'},
-  {id:'W123',pin:'1234',name:'Pritibah',skills:['Loader'],primaryLine:'RMI'},
-  {id:'W124',pin:'1234',name:'Manjula',skills:['Loader'],primaryLine:'RMI'},
-  {id:'W125',pin:'1234',name:'Tautala Tanuvasa',skills:['Loader/Skin'],primaryLine:'RMI'},
-  {id:'W140',pin:'1234',name:'Damien',skills:['Cleaning'],primaryLine:'CLN'},
-  {id:'W141',pin:'1234',name:'Ismail Imran',skills:['Cleaning'],primaryLine:'CLN'},
-  {id:'W142',pin:'1234',name:'Shu',skills:['Cleaning'],primaryLine:'CLN'},
-  {id:'W150',pin:'1234',name:'Shire',skills:['Pallet Mover Production'],primaryLine:'PLT'},
-  {id:'W151',pin:'1234',name:'Toan Dinh',skills:['Pallet Mover Pack out'],primaryLine:'PLT'},
+  {id:'W001',pin:'000001',name:'W001',skills:['Leading Hand','Batching'],primaryLine:'L1'},
+  {id:'W002',pin:'000002',name:'W002',skills:['Batching','Mixing Op'],primaryLine:'L1'},
+  {id:'W003',pin:'000003',name:'W003',skills:['Batching','Mixing Op'],primaryLine:'L1'},
+  {id:'W004',pin:'000004',name:'W004',skills:['Mixing Op','Forming Op'],primaryLine:'L1'},
+  {id:'W005',pin:'000005',name:'W005',skills:['Mixing Op'],primaryLine:'L1'},
+  {id:'W006',pin:'000006',name:'W006',skills:['Mixing Op','Batching'],primaryLine:'L1'},
+  {id:'W007',pin:'000007',name:'W007',skills:['Mixing Op'],primaryLine:'L1'},
+  {id:'W008',pin:'000008',name:'W008',skills:['Forming Op','Line Op'],primaryLine:'L1'},
+  {id:'W009',pin:'000009',name:'W009',skills:['Forming Op'],primaryLine:'L1'},
+  {id:'W010',pin:'000010',name:'W010',skills:['Carton Packer'],primaryLine:'L1'},
+  {id:'W011',pin:'000011',name:'W011',skills:['Carton Packer','Carton Weighing'],primaryLine:'L1'},
+  {id:'W012',pin:'000012',name:'W012',skills:['Carton Packer'],primaryLine:'L1'},
+  {id:'W013',pin:'000013',name:'W013',skills:['Carton Packer'],primaryLine:'L1'},
+  {id:'W014',pin:'000014',name:'W014',skills:['Carton Packer'],primaryLine:'L1'},
+  {id:'W015',pin:'000015',name:'W015',skills:['Carton Packer'],primaryLine:'L1'},
+  {id:'W016',pin:'000016',name:'W016',skills:['Carton Weighing','Carton Packer'],primaryLine:'L1'},
+  {id:'W017',pin:'000017',name:'W017',skills:['Carton Weighing'],primaryLine:'L1'},
+  {id:'W018',pin:'000018',name:'W018',skills:['Robot Op','Palletizer'],primaryLine:'L1'},
+  {id:'W019',pin:'000019',name:'W019',skills:['QC','Inspector'],primaryLine:'L1'},
+  {id:'W020',pin:'000020',name:'W020',skills:['Carton Packer','Liners'],primaryLine:'L1'},
+  {id:'W021',pin:'000021',name:'W021',skills:['Carton Packer','Liners'],primaryLine:'L1'},
+  {id:'W022',pin:'000022',name:'W022',skills:['Carton Packer','Liners'],primaryLine:'L1'},
+  {id:'W023',pin:'000023',name:'W023',skills:['Relief Packer'],primaryLine:'L1'},
+  {id:'W024',pin:'000024',name:'W024',skills:['Relief Packer'],primaryLine:'L1'},
+  {id:'W025',pin:'000025',name:'W025',skills:['Relief Packer'],primaryLine:'L1'},
+  {id:'W030',pin:'000026',name:'W030',skills:['Leading Hand'],primaryLine:'L2'},
+  {id:'W031',pin:'000027',name:'W031',skills:['Mixing Op','Forming Op'],primaryLine:'L2'},
+  {id:'W032',pin:'000028',name:'W032',skills:['Batching','Mixing Op'],primaryLine:'L2'},
+  {id:'W033',pin:'000029',name:'W033',skills:['Batching'],primaryLine:'L2'},
+  {id:'W034',pin:'000030',name:'W034',skills:['Forming Op','Line Op'],primaryLine:'L2'},
+  {id:'W035',pin:'000031',name:'W035',skills:['Line Op'],primaryLine:'L2'},
+  {id:'W036',pin:'000032',name:'W036',skills:['Line Op','Forming Op'],primaryLine:'L2'},
+  {id:'W037',pin:'000033',name:'W037',skills:['Forming Inspector','Inspector'],primaryLine:'L2'},
+  {id:'W038',pin:'000034',name:'W038',skills:['Fryer Inspector','Inspector'],primaryLine:'L2'},
+  {id:'W039',pin:'000035',name:'W039',skills:['QC','Inspector'],primaryLine:'L2'},
+  {id:'W040',pin:'000036',name:'W040',skills:['Leading Hand PO'],primaryLine:'L2'},
+  {id:'W041',pin:'000037',name:'W041',skills:['Bagging Op'],primaryLine:'L2'},
+  {id:'W042',pin:'000038',name:'W042',skills:['Carton Former','Carton Packer'],primaryLine:'L2'},
+  {id:'W043',pin:'000039',name:'W043',skills:['Carton Packer'],primaryLine:'L2'},
+  {id:'W044',pin:'000040',name:'W044',skills:['Carton Packer'],primaryLine:'L2'},
+  {id:'W045',pin:'000041',name:'W045',skills:['Carton Packer'],primaryLine:'L2'},
+  {id:'W046',pin:'000042',name:'W046',skills:['Spiral Inspector','Inspector'],primaryLine:'L2'},
+  {id:'W047',pin:'000043',name:'W047',skills:['Palletizer'],primaryLine:'L2'},
+  {id:'W048',pin:'000044',name:'W048',skills:['QC'],primaryLine:'L2'},
+  {id:'W049',pin:'000045',name:'W049',skills:['Carton Packer','Inspector'],primaryLine:'L2'},
+  {id:'W050',pin:'000046',name:'W050',skills:['Inspector','Carton Packer'],primaryLine:'L2'},
+  {id:'W051',pin:'000047',name:'W051',skills:['Relief Packer'],primaryLine:'L2'},
+  {id:'W052',pin:'000048',name:'W052',skills:['Relief Packer'],primaryLine:'L2'},
+  {id:'W060',pin:'000049',name:'W060',skills:['Leading Hand'],primaryLine:'L4'},
+  {id:'W061',pin:'000050',name:'W061',skills:['Bowl Chopper Op','Mixing Op'],primaryLine:'L4'},
+  {id:'W062',pin:'000051',name:'W062',skills:['Mixing Op','Batching'],primaryLine:'L4'},
+  {id:'W063',pin:'000052',name:'W063',skills:['Batching'],primaryLine:'L4'},
+  {id:'W064',pin:'000053',name:'W064',skills:['Forming Op'],primaryLine:'L4'},
+  {id:'W065',pin:'000054',name:'W065',skills:['Line Op'],primaryLine:'L4'},
+  {id:'W066',pin:'000055',name:'W066',skills:['Line Op'],primaryLine:'L4'},
+  {id:'W067',pin:'000056',name:'W067',skills:['Forming Inspector'],primaryLine:'L4'},
+  {id:'W068',pin:'000057',name:'W068',skills:['Fryer Inspector','Inspector'],primaryLine:'L4'},
+  {id:'W069',pin:'000058',name:'W069',skills:['QC','Inspector'],primaryLine:'L4'},
+  {id:'W070',pin:'000059',name:'W070',skills:['Leading Hand HC'],primaryLine:'L4'},
+  {id:'W071',pin:'000060',name:'W071',skills:['Bagging Op'],primaryLine:'L4'},
+  {id:'W072',pin:'000061',name:'W072',skills:['Inspector'],primaryLine:'L4'},
+  {id:'W073',pin:'000062',name:'W073',skills:['Inspector'],primaryLine:'L4'},
+  {id:'W074',pin:'000063',name:'W074',skills:['Inspector'],primaryLine:'L4'},
+  {id:'W075',pin:'000064',name:'W075',skills:['Inspector'],primaryLine:'L4'},
+  {id:'W076',pin:'000065',name:'W076',skills:['QC'],primaryLine:'L4'},
+  {id:'W077',pin:'000066',name:'W077',skills:['CPS Op'],primaryLine:'L4'},
+  {id:'W078',pin:'000067',name:'W078',skills:['Relief Inspector'],primaryLine:'L4'},
+  {id:'W079',pin:'000068',name:'W079',skills:['Relief Inspector'],primaryLine:'L4'},
+  {id:'W090',pin:'000069',name:'W090',skills:['Carton Former'],primaryLine:'KLK'},
+  {id:'W091',pin:'000070',name:'W091',skills:['Carton Packer'],primaryLine:'KLK'},
+  {id:'W092',pin:'000071',name:'W092',skills:['Carton Packer'],primaryLine:'KLK'},
+  {id:'W093',pin:'000072',name:'W093',skills:['Carton Packer'],primaryLine:'KLK'},
+  {id:'W094',pin:'000073',name:'W094',skills:['Carton Packer'],primaryLine:'KLK'},
+  {id:'W095',pin:'000074',name:'W095',skills:['Carton Packer'],primaryLine:'KLK'},
+  {id:'W096',pin:'000075',name:'W096',skills:['Carton Packer'],primaryLine:'KLK'},
+  {id:'W097',pin:'000076',name:'W097',skills:['Palletizer'],primaryLine:'KLK'},
+  {id:'W098',pin:'000077',name:'W098',skills:['Palletizer'],primaryLine:'KLK'},
+  {id:'W099',pin:'000078',name:'W099',skills:['Palletizer'],primaryLine:'KLK'},
+  {id:'W110',pin:'000079',name:'W110',skills:['Leading Hand'],primaryLine:'RMI'},
+  {id:'W111',pin:'000080',name:'W111',skills:['QC'],primaryLine:'RMI'},
+  {id:'W112',pin:'000081',name:'W112',skills:['Pallet Jack'],primaryLine:'RMI'},
+  {id:'W113',pin:'000082',name:'W113',skills:['Verification'],primaryLine:'RMI'},
+  {id:'W114',pin:'000083',name:'W114',skills:['Skin Inspector Verification'],primaryLine:'RMI'},
+  {id:'W115',pin:'000084',name:'W115',skills:['Scanning/Labels'],primaryLine:'RMI'},
+  {id:'W116',pin:'000085',name:'W116',skills:['Inspector'],primaryLine:'RMI'},
+  {id:'W117',pin:'000086',name:'W117',skills:['Inspector'],primaryLine:'RMI'},
+  {id:'W118',pin:'000087',name:'W118',skills:['Inspector'],primaryLine:'RMI'},
+  {id:'W119',pin:'000088',name:'W119',skills:['Inspector'],primaryLine:'RMI'},
+  {id:'W120',pin:'000089',name:'W120',skills:['Inspector'],primaryLine:'RMI'},
+  {id:'W121',pin:'000090',name:'W121',skills:['Inspector'],primaryLine:'RMI'},
+  {id:'W122',pin:'000091',name:'W122',skills:['Loader'],primaryLine:'RMI'},
+  {id:'W123',pin:'000092',name:'W123',skills:['Loader'],primaryLine:'RMI'},
+  {id:'W124',pin:'000093',name:'W124',skills:['Loader'],primaryLine:'RMI'},
+  {id:'W125',pin:'000094',name:'W125',skills:['Loader/Skin'],primaryLine:'RMI'},
+  {id:'W140',pin:'000095',name:'W140',skills:['Cleaning'],primaryLine:'CLN'},
+  {id:'W141',pin:'000096',name:'W141',skills:['Cleaning'],primaryLine:'CLN'},
+  {id:'W142',pin:'000097',name:'W142',skills:['Cleaning'],primaryLine:'CLN'},
+  {id:'W150',pin:'000098',name:'W150',skills:['Pallet Mover Production'],primaryLine:'PLT'},
+  {id:'W151',pin:'000099',name:'W151',skills:['Pallet Mover Pack out'],primaryLine:'PLT'},
 ];
 const SEED_MANAGERS = [
-  {id:'M001',pin:'0000',name:'Milco',area:'Line 1 / RMI',role:'manager'},
-  {id:'M002',pin:'0000',name:'Ali',area:'Line 2 / Line 4',role:'manager'},
-  {id:'ADMIN',pin:'0000',name:'Admin',area:'All Lines',role:'manager'},
+  {id:'M001',pin:'900001',name:'M001',area:'Line 1 / RMI',role:'manager'},
+  {id:'M002',pin:'900002',name:'M002',area:'Line 2 / Line 4',role:'manager'},
+  {id:'ADMIN',pin:'900003',name:'ADMIN',area:'All Lines',role:'manager'},
 ];
 const SHIFT_TEMPLATES = {
   L1:[{role:'Leading Hand',count:1},{role:'Batching',count:2},{role:'Mixing Op',count:4},{role:'Forming Op',count:2},{role:'Carton Packer',count:6},{role:'Carton Weighing',count:2},{role:'Robot Op',count:1},{role:'QC',count:1},{role:'Relief Packer',count:3}],
@@ -681,7 +681,7 @@ const SHIFT_TEMPLATES = {
   PLT:[{role:'Pallet Mover Production',count:1},{role:'Pallet Mover Pack out',count:1}],
 };
 const SKU_POSITION_TEMPLATES = {
-  P02: { positions: [ // JAPAN 10:1 BEEF PATTIES — 25
+  P02: { positions: [ // Product 02 — 25
     {role:'Leading Hand', count:1},
     {role:'Batching', count:2},
     {role:'Mixing Op', count:4},
@@ -693,7 +693,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:2},
     {role:'Relief Packer', count:3},
   ]},
-  P03: { positions: [ // 4:1 LOCAL BEEF PATTIES — 23
+  P03: { positions: [ // Product 03 — 23
     {role:'Leading Hand', count:1},
     {role:'Batching', count:2},
     {role:'Mixing Op', count:4},
@@ -705,7 +705,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:3},
   ]},
-  P04: { positions: [ // B:S PATTIES NEW — 23
+  P04: { positions: [ // Product 04 — 23
     {role:'Leading Hand', count:1},
     {role:'Batching', count:2},
     {role:'Mixing Op', count:4},
@@ -717,7 +717,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:3},
   ]},
-  P05: { positions: [ // 3:1 BEEF PATTIES ANGUS OPTIMIS — 23
+  P05: { positions: [ // Product 05 — 23
     {role:'Leading Hand', count:1},
     {role:'Batching', count:2},
     {role:'Mixing Op', count:4},
@@ -729,7 +729,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:3},
   ]},
-  P01: { positions: [ // 10:1 LOCAL BEEF PATTIES — 22
+  P01: { positions: [ // Product 01 — 22
     {role:'Leading Hand', count:1},
     {role:'Batching', count:2},
     {role:'Mixing Op', count:4},
@@ -740,7 +740,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:3},
   ]},
-  P10: { positions: [ // KFC CHK NUGGETS 14.4KG — 21
+  P10: { positions: [ // Product 06 — 21
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -757,7 +757,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Palletizer', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P21: { positions: [ // COLES TEMPURA NUGGET 400GX4 — 14
+  P21: { positions: [ // Product 15 — 14
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -770,23 +770,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Bagging Op', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P22: { positions: [ // WW ESSENTIAL NUGGETS B — 19
-    {role:'Leading Hand', count:1},
-    {role:'Mixing Op', count:1},
-    {role:'Batching', count:3},
-    {role:'Forming Op', count:1},
-    {role:'Line Op', count:1},
-    {role:'Forming Inspector', count:1},
-    {role:'Fryer Inspector', count:1},
-    {role:'Leading Hand PO', count:1},
-    {role:'Bagging Op', count:1},
-    {role:'Carton Former', count:1},
-    {role:'Carton Packer', count:3},
-    {role:'Palletizer', count:1},
-    {role:'QC', count:1},
-    {role:'Relief Packer', count:2},
-  ]},
-  P14: { positions: [ // B&G CHK NUGGETS 12 X 500G — 19
+  P22: { positions: [ // Product 16 — 19
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -802,22 +786,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P15: { positions: [ // COLES PLAIN CHK TENDERS 6 x 1KG — 18
-    {role:'Leading Hand', count:1},
-    {role:'Mixing Op', count:1},
-    {role:'Batching', count:3},
-    {role:'Forming Op', count:1},
-    {role:'Line Op', count:1},
-    {role:'Fryer Inspector', count:1},
-    {role:'Leading Hand PO', count:1},
-    {role:'Bagging Op', count:1},
-    {role:'Carton Former', count:1},
-    {role:'Carton Packer', count:3},
-    {role:'Palletizer', count:1},
-    {role:'QC', count:1},
-    {role:'Relief Packer', count:2},
-  ]},
-  P23: { positions: [ // RED ROOSTER SPICED CARAMEL BALL 12KG — 19
+  P14: { positions: [ // Product 09 — 19
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -833,7 +802,38 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P24: { positions: [ // COLES CHK TENDERS 4 x 400G K RSPCA — 13
+  P15: { positions: [ // Product 10 — 18
+    {role:'Leading Hand', count:1},
+    {role:'Mixing Op', count:1},
+    {role:'Batching', count:3},
+    {role:'Forming Op', count:1},
+    {role:'Line Op', count:1},
+    {role:'Fryer Inspector', count:1},
+    {role:'Leading Hand PO', count:1},
+    {role:'Bagging Op', count:1},
+    {role:'Carton Former', count:1},
+    {role:'Carton Packer', count:3},
+    {role:'Palletizer', count:1},
+    {role:'QC', count:1},
+    {role:'Relief Packer', count:2},
+  ]},
+  P23: { positions: [ // Product 17 — 19
+    {role:'Leading Hand', count:1},
+    {role:'Mixing Op', count:1},
+    {role:'Batching', count:3},
+    {role:'Forming Op', count:1},
+    {role:'Line Op', count:1},
+    {role:'Forming Inspector', count:1},
+    {role:'Fryer Inspector', count:1},
+    {role:'Leading Hand PO', count:1},
+    {role:'Bagging Op', count:1},
+    {role:'Carton Former', count:1},
+    {role:'Carton Packer', count:3},
+    {role:'Palletizer', count:1},
+    {role:'QC', count:1},
+    {role:'Relief Packer', count:2},
+  ]},
+  P24: { positions: [ // Product 18 — 13
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -845,7 +845,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Bagging Op', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P16: { positions: [ // COLES CHK KIEV BALLS 720GX3 — 22
+  P16: { positions: [ // Product 11 — 22
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -859,7 +859,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P25: { positions: [ // GC GARLIC CHICKEN BALLS 5X1 KG — 18
+  P25: { positions: [ // Product 19 — 18
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -873,7 +873,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P26: { positions: [ // COLES MINI CHICKEN KIEV 320GX4 — 12
+  P26: { positions: [ // Product 20 — 12
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -884,7 +884,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Bagging Op', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P17: { positions: [ // WW GARLIC CHK BITES 6X360G KK — 12
+  P17: { positions: [ // Product 12 — 12
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -895,7 +895,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Bagging Op', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P27: { positions: [ // CHIKO GARLIC CHICKEN BALLS 40G — 19
+  P27: { positions: [ // Product 21 — 19
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -909,7 +909,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P28: { positions: [ // CHIKO CHICKEN SCHNITZEL 23 X 125G — 23
+  P28: { positions: [ // Product 22 — 23
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -924,7 +924,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P29: { positions: [ // CHIKO CHICKEN KIEV 40 X 120G — 17
+  P29: { positions: [ // Product 23 — 17
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -938,7 +938,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P30: { positions: [ // MCD CHEESE STICKS — 20
+  P30: { positions: [ // Product 24 — 20
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -954,7 +954,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P31: { positions: [ // MCD CHEESE PATTY — 19
+  P31: { positions: [ // Product 25 — 19
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -969,7 +969,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P32: { positions: [ // KFC FRIED COOKIE DOUGH — 19
+  P32: { positions: [ // Product 26 — 19
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -985,7 +985,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P33: { positions: [ // WW MOZZARELLA STICK 300G — 13
+  P33: { positions: [ // Product 27 — 13
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -997,7 +997,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Bagging Op', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P34: { positions: [ // ASSM MOZZARELLA DIPPERS — 13
+  P34: { positions: [ // Product 28 — 13
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:3},
@@ -1009,7 +1009,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Bagging Op', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P20: { positions: [ // FALAFEL 5 X 1KG — 19
+  P20: { positions: [ // Product 14 — 19
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:4},
@@ -1024,7 +1024,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'QC', count:1},
     {role:'Relief Packer', count:2},
   ]},
-  P11: { positions: [ // MCDONALDS NUGGET — 20
+  P11: { positions: [ // Product 07 — 20
     {role:'Leading Hand', count:1},
     {role:'Bowl Chopper Op', count:1},
     {role:'Mixing Op', count:1},
@@ -1040,7 +1040,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'CPS Op', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P35: { positions: [ // WW CHK NUGGETS CRUMB 8X400G — 17
+  P35: { positions: [ // Product 29 — 17
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -1055,7 +1055,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'CPS Op', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P36: { positions: [ // WW CHK NUGGETS TEMPURA 8X400G — 19
+  P36: { positions: [ // Product 30 — 19
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -1071,7 +1071,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'CPS Op', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P37: { positions: [ // GC CHICKEN TEMPURA NUGG 5X1 KG — 20
+  P37: { positions: [ // Product 31 — 20
     {role:'Leading Hand', count:1},
     {role:'Bowl Chopper Op', count:1},
     {role:'Mixing Op', count:1},
@@ -1088,7 +1088,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Labeller', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P38: { positions: [ // WW PLAIN CHK TENDERS WIP — 20
+  P38: { positions: [ // Product 32 — 20
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -1104,7 +1104,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Labeller', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P39: { positions: [ // CHK KIEV 175G — 19
+  P39: { positions: [ // Product 33 — 19
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -1119,7 +1119,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Labeller', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P40: { positions: [ // CHIKO BEEF MEATBALL 5 X 1KG — 20
+  P40: { positions: [ // Product 34 — 20
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:2},
     {role:'Batching', count:3},
@@ -1132,7 +1132,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Labeller', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P41: { positions: [ // JEFFERSON MEAT BALLS 5 X 1KG — 20
+  P41: { positions: [ // Product 35 — 20
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:2},
     {role:'Batching', count:3},
@@ -1145,7 +1145,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Labeller', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P42: { positions: [ // GC BEEF MEATBALL 5X1 KG — 20
+  P42: { positions: [ // Product 36 — 20
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:2},
     {role:'Batching', count:3},
@@ -1158,7 +1158,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Labeller', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P18: { positions: [ // SUBWAY MEATBALLS - 8 X 1.5KG — 20
+  P18: { positions: [ // Product 13 — 20
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:2},
     {role:'Batching', count:3},
@@ -1171,7 +1171,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Labeller', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P19: { positions: [ // LW MINI POTATO CAKES ORIGINAL BAG 12 X 500G — 21
+  P19: { positions: [ // P19 — 21
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -1187,7 +1187,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Labeller', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P43: { positions: [ // MC WINGS — 24
+  P43: { positions: [ // Product 37 — 24
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -1202,7 +1202,7 @@ const SKU_POSITION_TEMPLATES = {
     {role:'CPS Op', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  P12: { positions: [ // MC CRISPY — 28
+  P12: { positions: [ // Product 08 — 28
     {role:'Leading Hand', count:1},
     {role:'Mixing Op', count:1},
     {role:'Batching', count:2},
@@ -1218,12 +1218,12 @@ const SKU_POSITION_TEMPLATES = {
     {role:'Extra Inspector', count:1},
     {role:'Relief Inspector', count:2},
   ]},
-  PKLK: { positions: [ // KLIKLOK CARTONING — 10
+  PKLK: { positions: [ // Area B cartoning — 10
     {role:'Carton Former', count:1},
     {role:'Carton Packer', count:6},
     {role:'Palletizer', count:3},
   ]},
-  PRMI: { positions: [ // RMI / GOODS INWARDS   16
+  PRMI: { positions: [ // Area A   16
     {role:'Leading Hand', count:1},
     {role:'QC', count:1},
     {role:'Pallet Jack', count:1},
@@ -1326,11 +1326,11 @@ function LoginScreen() {
     <div className="login-screen">
       <div className="login-art">
         <div className="login-art-content">
-          <img src={LOGO_URI} className="login-logo" alt="Turosi Food Solutions" />
+          <img src={LOGO_URI} className="login-logo" alt="Shift Planner" />
           <div className="login-headline">THE ROSTER, IN YOUR HAND.</div>
           <div className="login-tagline">From planning to your workers in minutes.</div>
         </div>
-        <div className="login-foot">© Crewboard · Built by Thanh · Turosi Food Solutions</div>
+        <div className="login-foot">© Crewboard · Built by Thanh</div>
       </div>
       <div className="login-form-wrap">
         <div className="login-form">
@@ -1360,11 +1360,11 @@ function TopBar({subtitle}) {
   return (
     <header className="topbar">
       <div className="brand">
-        <img src={LOGO_URI} className="brand-logo" alt="Turosi" />
+        <img src={LOGO_URI} className="brand-logo" alt="Crewboard" />
         <div className="brand-divider"></div>
         <div className="brand-text">
           <div className="brand-name">Crewboard</div>
-          <div className="brand-sub">{subtitle||'Turosi Food Solutions'}</div>
+          <div className="brand-sub">{subtitle||'Shift Planner'}</div>
         </div>
       </div>
       <div className="topbar-meta">
@@ -2160,10 +2160,10 @@ function PrintView() {
       <div className="pv-sheet">
         <div className="pv-header">
           <div className="pv-header-left">
-            <img src={LOGO_URI} className="pv-logo" alt="Turosi" />
+            <img src={LOGO_URI} className="pv-logo" alt="Crewboard" />
             <div className="pv-title-block">
               <div className="pv-title">{pageTitle} <span className={`pv-badge ${isArvo?'arvo':'day'}`}>{isArvo?'☾ Arvo':'☀ Day'}</span></div>
-              <div className="pv-subtitle">Week of {weekLabel} · Crewboard · Turosi Food Solutions</div>
+              <div className="pv-subtitle">Week of {weekLabel} · Crewboard</div>
             </div>
           </div>
           <div className="pv-meta">
@@ -2239,7 +2239,7 @@ function PrintView() {
             <span><span className="pt-legend-dot" style={{background:'#dc4a2a'}}></span>Conflict</span>
             <span><span className="pt-legend-dot" style={{background:'#b8860b'}}></span>RDO</span>
           </div>
-          <div>Crewboard · Turosi Food Solutions · Confidential</div>
+          <div>Crewboard · Confidential</div>
         </div>
       </div>
     );
@@ -2412,7 +2412,7 @@ function SKUTemplatesView() {
           <div className="grid-2 mb-4">
             <div>
               <label className="label">SKU / Product Name</label>
-              <input className="input" placeholder="e.g. COLES BEEF BURGER 150G"
+              <input className="input" placeholder="e.g. Product name"
                 value={newSku.name} onChange={e=>setNewSku({...newSku,name:e.target.value})}
                 autoFocus />
             </div>
